@@ -67,7 +67,6 @@ const App = () => {
                 <Route path="/mycard" element={<EditProfile />} />
                 <Route path="/account" element={<MyAccount />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/@:username" element={<PublicProfile />} />
                 <Route path="/:username" element={<PublicProfile />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

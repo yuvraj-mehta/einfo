@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import type { EducationData } from "@/components/Education";
+import { WorkExperienceData } from "@/components/WorkExperience";
+import { defaultEducation } from "@/lib/educationData";
+import { defaultWorkExperiences } from "@/lib/workExperienceData";
+
 import {
   PersonProfile,
   ProjectLink,
@@ -10,12 +15,6 @@ import {
   PortfolioProject,
   defaultPortfolioProjects,
 } from "@/lib/portfolioData";
-import {
-  WorkExperienceData,
-  defaultWorkExperiences,
-} from "@/lib/workExperienceData";
-import type { EducationData } from "@/components/Education";
-import { defaultEducation } from "@/lib/educationData";
 
 export interface VisibilitySettings {
   showLinks: boolean;
@@ -280,15 +279,15 @@ export const useProfileStore = create<ProfileState>()(
 if (typeof window !== "undefined") {
   import("./authStore").then(({ useAuthStore }) => {
     useAuthStore.subscribe(
-      (state) => state.user,
-      (user) => {
+      (state) => {
+        const user = state.user;
         if (user) {
           useProfileStore.getState().initializeWithUserData(user);
         } else {
           // Reset profile when user logs out
           useProfileStore.getState().resetProfile();
         }
-      },
+      }
     );
   });
 }

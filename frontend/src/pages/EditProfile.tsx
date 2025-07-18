@@ -13,15 +13,16 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import type { EducationData } from "@/components/Education";
+import type { WorkExperienceData } from "@/components/WorkExperience";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { getIconFromName } from "@/lib/iconUtils";
 import type { PortfolioProject } from "@/lib/portfolioData";
-import type { PersonProfile, ProjectLink, VisibilitySettings } from "@/lib/profileData";
-import type { WorkExperienceData } from "@/lib/workExperienceData";
+import type { PersonProfile, ProjectLink } from "@/lib/profileData";
 import { api } from "@/services/api";
 import { useAuthStore, useProfileStore } from "@/stores";
+import type { VisibilitySettings } from "@/stores/profileStore";
 
 const EditProfile = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
@@ -56,7 +57,7 @@ const EditProfile = () => {
       initializeWithUserData(user);
       loadProfileData();
     }
-  }, [user]);
+  }, [user, initializeWithUserData]);
 
   const loadProfileData = async () => {
     try {
@@ -132,6 +133,7 @@ const EditProfile = () => {
         id: project.id,
         title: project.title,
         description: project.description,
+        href: project.href || project.url, // Ensure href is included
         url: project.href || project.url, // Map href to url
         iconName: typeof project.icon === 'string' ? project.icon : "Link", // Ensure iconName is a string
         imageUrl: project.imageUrl || "",
@@ -239,11 +241,11 @@ const EditProfile = () => {
     }
   };
 
-  // Show loading while checking auth
-  if (authLoading) {
+  // Show loading while checking auth or loading profile data
+  if (authLoading || isLoadingProfile) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" label="Loading..." />
+        <LoadingSpinner size="lg" label={authLoading ? "Loading..." : "Loading profile..."} />
       </div>
     );
   }

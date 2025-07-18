@@ -8,7 +8,7 @@ import PortfolioSection from "@/components/PortfolioSection";
 import UnifiedProfileSection from "@/components/UnifiedProfileSection";
 import WorkExperienceSection from "@/components/WorkExperienceSection";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -30,26 +30,44 @@ const PublicProfile = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
+  const location = useLocation();
 
   const [profile, setProfile] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [showRedirectMessage, setShowRedirectMessage] = useState(false);
 
+  // Check if URL starts with @ (proper format)
+  const hasAtSymbol = location.pathname.startsWith('/@');
+  
   // Clean username (remove @ if present)
   const cleanUsername = username?.startsWith("@")
     ? username.slice(1)
     : username;
 
+  // Handle invalid URL format (without @)
   useEffect(() => {
-    if (!cleanUsername) {
-      navigate("/404");
+    if (username && !hasAtSymbol) {
+      // Show redirect message instead of loading
+      setShowRedirectMessage(true);
+      setIsLoading(false);
+      return;
+    } else if (username && hasAtSymbol) {
+      // Reset redirect message for valid URLs
+      setShowRedirectMessage(false);
+    }
+  }, [username, hasAtSymbol]);
+
+  useEffect(() => {
+    if (!cleanUsername || !hasAtSymbol || showRedirectMessage) {
+      setIsLoading(false);
       return;
     }
 
     loadProfile();
     // Analytics tracking removed
-  }, [cleanUsername]);
+  }, [cleanUsername, hasAtSymbol, showRedirectMessage]);
 
   useEffect(() => {
     // Check if viewing own profile
@@ -67,22 +85,28 @@ const PublicProfile = () => {
 
       if (response.success && response.data) {
         // Transform portfolio and experience data to match frontend interface
+        const apiData = response.data as any; // Bypass TypeScript checking to access the original data structure
         const transformedData = {
-          ...response.data,
-          portfolio: response.data.portfolio ? response.data.portfolio.map((project: any) => ({
+          ...apiData,
+          portfolio: apiData.portfolio ? apiData.portfolio.map((project: any) => ({
             ...project,
             href: project.url || project.href, // Map url to href
             icon: project.iconName ? getIconFromName(project.iconName) : null, // Convert iconName to icon component
           })) : [],
-          experiences: response.data.experiences ? response.data.experiences.map((exp: any) => ({
+          experiences: apiData.experiences ? apiData.experiences.map((exp: any) => ({
             ...exp,
             duration: exp.duration || "Duration not specified", // Use duration field directly
             icon: exp.iconName ? getIconFromName(exp.iconName) : null, // Convert iconName to icon component
           })) : [],
-          education: response.data.education ? response.data.education.map((edu: any) => ({
+          education: apiData.education ? apiData.education.map((edu: any) => ({
             ...edu,
             duration: edu.duration || "Duration not specified", // Use duration field directly
             icon: edu.iconName ? getIconFromName(edu.iconName) : null, // Convert iconName to icon component
+          })) : [],
+          links: apiData.links ? apiData.links.map((link: any) => ({
+            ...link,
+            href: link.url || link.href, // Map url to href
+            icon: link.iconName ? getIconFromName(link.iconName) : null, // Convert iconName to icon component
           })) : [],
         };
         
@@ -151,6 +175,77 @@ const PublicProfile = () => {
     );
   }
 
+  // Show redirect message for invalid URL format
+  if (showRedirectMessage) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+        {/* Logo - Top Left */}
+        <div className="absolute top-4 left-4 z-50">
+          <Logo />
+        </div>
+
+        {/* Navigation - Top Right */}
+        <div className="absolute top-4 right-4 z-50">
+          <Button
+            onClick={() => navigate("/")}
+            variant="outline"
+            size="sm"
+            className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
+          >
+            <Home className="w-4 h-4 mr-2" />
+            Home
+          </Button>
+        </div>
+
+        {/* Redirect Message Content */}
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="max-w-md mx-auto text-center space-y-6">
+            <div className="w-16 h-16 mx-auto bg-blue-100 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-8 h-8 text-blue-600" />
+            </div>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Looking for a profile?
+              </h1>
+              <p className="text-gray-600">
+                User profiles start with the @ symbol
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Try going to:
+              </p>
+              <Button
+                onClick={() => {
+                  navigate(`/@${cleanUsername}`, { replace: true });
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg inline-flex items-center gap-2"
+              >
+                <span>/@{cleanUsername}</span>
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={() => navigate("/")} variant="default">
+                Go Home
+              </Button>
+              <Button
+                onClick={() => navigate("/demo")}
+                variant="outline"
+                className="text-gray-600"
+              >
+                View Demo Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Error state
   if (error || !profile) {
     return (
@@ -182,10 +277,10 @@ const PublicProfile = () => {
 
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-gray-900">
-                Profile Not Found
+                404 - Profile Not Found
               </h1>
               <p className="text-gray-600">
-                The profile "{cleanUsername}" doesn't exist or has been removed.
+                Looking for profile @{cleanUsername}? It doesn't exist or has been removed.
               </p>
             </div>
 

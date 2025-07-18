@@ -73,6 +73,7 @@ const MyAccount = () => {
   const [verificationData, setVerificationData] = useState({
     username: "",
   });
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   
   // Generate a more unique default username
   const generateDefaultUsername = (email: string) => {
@@ -86,10 +87,10 @@ const MyAccount = () => {
   };
 
   const [accountData, setAccountData] = useState<UserAccountData>({
-    name: user?.name || "",
-    username: user?.username || generateDefaultUsername(user?.email || ""),
-    instantMessageSubject: "Let's Connect!",
-    instantMessage: "Hey there! I'm using e-info.me to connect and share.",
+    name: "",
+    username: "",
+    instantMessageSubject: "",
+    instantMessage: "",
   });
 
   // Debounced username availability check
@@ -178,11 +179,14 @@ const MyAccount = () => {
             ...prev,
             name: user.name || "",
             username: user.username || generateDefaultUsername(user.email || ""),
+            instantMessageSubject: "Let's Connect!",
+            instantMessage: "Hey there! I'm using e-info.me to connect and share.",
           }));
         }
       }
 
       setIsSyncing(false);
+      setIsDataLoaded(true);
     };
 
     loadUserData();
@@ -423,7 +427,7 @@ const MyAccount = () => {
   };
 
   // Show loading while checking auth or syncing data
-  if (authLoading || isSyncing) {
+  if (authLoading || isSyncing || !isDataLoaded) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <LoadingSpinner
