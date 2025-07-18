@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  name      String
+  googleId  String?  @unique
+  avatarUrl String?
+  emailVerified Boolean @default(false)
+  isActive  Boolean @default(true)
+  instantMessageSubject String @default("Let's Connect!")
+  instantMessageBody String @default("Hey there! I'm using e-info.me to connect and share.")
+  
+  // Simple analytics counters
+  totalViews Int @default(0)
+  totalClicks Int @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile UserProfile?
+  links   ProfileLink[]
+  portfolio PortfolioProject[]
+  experiences WorkExperience[]
+  education Education[]
+  analytics ProfileAnalytic[]
+  receivedStars ProfileStar[] @relation("ProfileUser")
+  emailVerifications EmailVerification[]
+
+  @@map("users")
+}
+
+model UserProfile {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobTitle String?
+  bio String?
+  website String?
+  location String?
+  profileImageUrl String?
+  resumeUrl String?
+  skills String[]
+
+  showLinks Boolean @default(true)
+  showExperience Boolean @default(true)
+  showPortfolio Boolean @default(true)
+  showEducation Boolean @default(true)
+  showTitles Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_profiles")
+}
+
+model ProfileLink {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String
+  description String?
+  url String
+  iconName String?
+  imageUrl String?
+  projectDetails String?
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("profile_links")
+}
+
+model PortfolioProject {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String
+  description String?
+  category String?
+  url String?
+  iconName String?
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  images PortfolioImage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("portfolio_projects")
+}
+
+model PortfolioImage {
+  id String @id @default(cuid())
+  projectId String
+  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  url String
+  title String?
+  description String?
+  displayOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@map("portfolio_images")
+}
+
+model WorkExperience {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  company String
+  position String
+  duration String? // Free-form duration string like "2020 - 2022" or "2022 - Present"
+  startDate DateTime?
+  endDate DateTime?
+  location String?
+  description String?
+  iconName String?
+  achievements String[]
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  projects WorkProject[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("work_experiences")
+}
+
+model WorkProject {
+  id String @id @default(cuid())
+  experienceId String
+  experience WorkExperience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  title String
+  description String?
+  technologies String[]
+  displayOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  @@map("work_projects")
+}
+
+model Education {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  institution String
+  degree String
+  duration String? // Free-form duration string like "2018 - 2022" or "2020 - Present"
+  startDate DateTime?
+  endDate DateTime?
+  location String?
+  description String?
+  educationType String // degree, certification, certificate, course
+  gpa String?
+  achievements String[]
+  courses String[]
+  iconName String?
+  imageUrl String?
+  websiteUrl String?
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("education")
+}
+
+model ProfileAnalytic {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  visitorIp String?
+  userAgent String?
+  referrer String?
+  eventType String // profile_view, link_click, etc.
+  metadata Json?
+  timestamp DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@map("profile_analytics")
+}
+
+model ProfileStar {
+  id String @id @default(cuid())
+  userId String
+  visitorIp String?
+  
+  user User @relation("ProfileUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, visitorIp])
+  @@map("profile_stars")
+}
+
+model EmailVerification {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token String @unique
+  expiresAt DateTime
+  isUsed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@map("email_verifications")
+}

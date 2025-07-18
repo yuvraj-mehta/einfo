@@ -1,0 +1,60 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Frontend specific ignores
+.cursor/
+.dockerignore
+dist/
+build/
+
+# Documentation files that might be temporary
+AGENTS.md
+BACKEND_API_DOCUMENTATION.md
+BACKEND_API_SPECIFICATION.md
+BACKEND_IMPLEMENTATION_GUIDE.md
+FRONTEND_BACKEND_INTEGRATION.md
+GOOGLE_OAUTH_SETUP.md
+PROJECT_OVERVIEW.md
+ZUSTAND_STATE_MANAGEMENT.md
+
+# Setup and debug files
+setup.sh
+debug-*.js
+
+# Build and deployment files
+netlify.toml
+vercel.json
+
+# npm/yarn
+.npmrc
+package-lock.json
+yarn.lock
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

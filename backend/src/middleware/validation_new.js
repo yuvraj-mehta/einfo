@@ -1,0 +1,358 @@
+const { body, validationResult } = require("express-validator");
+
+/**
+ * Handle validation errors
+ */
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: errors.array().map(error => ({
+        field: error.path,
+        message: error.msg,
+        value: error.value,
+      })),
+    });
+  }
+  next();
+};
+
+/**
+ * Google OAuth validation
+ */
+const validateGoogleAuth = [
+  body("google_token")
+    .notEmpty()
+    .withMessage("Google token is required")
+    .isString()
+    .withMessage("Google token must be a string"),
+  body("username")
+    .optional()
+    .isLength({ min: 5, max: 20 })
+    .withMessage("Username must be between 5 and 20 characters")
+    .matches(/^[a-z0-9-]+$/)
+    .withMessage("Username can only contain lowercase letters, numbers, and hyphens")
+    .custom((value) => {
+      if (value && value.includes("--")) {
+        throw new Error("Username cannot contain consecutive hyphens");
+      }
+      if (value && (value.startsWith("-") || value.endsWith("-"))) {
+        throw new Error("Username cannot start or end with hyphens");
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
+/**
+ * Profile update validation
+ */
+const validateProfileUpdate = [
+  body("name")
+    .optional()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Name must be between 1 and 100 characters")
+    .trim(),
+  body("jobTitle")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("Job title must be less than 100 characters")
+    .trim(),
+  body("bio")
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage("Bio must be less than 500 characters")
+    .trim(),
+  body("website")
+    .optional()
+    .isURL()
+    .withMessage("Please provide a valid website URL"),
+  body("location")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("Location must be less than 100 characters")
+    .trim(),
+  body("skills")
+    .optional()
+    .isArray()
+    .withMessage("Skills must be an array")
+    .custom((skills) => {
+      if (skills.length > 20) {
+        throw new Error("Maximum 20 skills allowed");
+      }
+      for (const skill of skills) {
+        if (typeof skill !== "string" || skill.length > 30) {
+          throw new Error("Each skill must be a string with max 30 characters");
+        }
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
+/**
+ * Link validation
+ */
+const validateLink = [
+  body("title")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Title must be between 1 and 100 characters")
+    .trim(),
+  body("url")
+    .isURL()
+    .withMessage("Please provide a valid URL"),
+  body("description")
+    .optional()
+    .isLength({ max: 200 })
+    .withMessage("Description must be less than 200 characters")
+    .trim(),
+  body("iconName")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Icon name must be less than 50 characters"),
+  body("projectDetails")
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage("Project details must be less than 500 characters")
+    .trim(),
+  handleValidationErrors,
+];
+
+/**
+ * Portfolio project validation
+ */
+const validatePortfolioProject = [
+  body("title")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Title must be between 1 and 100 characters")
+    .trim(),
+  body("description")
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage("Description must be less than 500 characters")
+    .trim(),
+  body("category")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Category must be less than 50 characters")
+    .trim(),
+  body("url")
+    .optional()
+    .isURL()
+    .withMessage("Please provide a valid URL"),
+  body("iconName")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Icon name must be less than 50 characters"),
+  handleValidationErrors,
+];
+
+/**
+ * Work experience validation
+ */
+const validateWorkExperience = [
+  body("company")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Company name must be between 1 and 100 characters")
+    .trim(),
+  body("position")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Position must be between 1 and 100 characters")
+    .trim(),
+  body("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid date"),
+  body("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid date"),
+  body("location")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("Location must be less than 100 characters")
+    .trim(),
+  body("description")
+    .optional()
+    .isLength({ max: 1000 })
+    .withMessage("Description must be less than 1000 characters")
+    .trim(),
+  body("achievements")
+    .optional()
+    .isArray()
+    .withMessage("Achievements must be an array")
+    .custom((achievements) => {
+      if (achievements.length > 10) {
+        throw new Error("Maximum 10 achievements allowed");
+      }
+      for (const achievement of achievements) {
+        if (typeof achievement !== "string" || achievement.length > 200) {
+          throw new Error("Each achievement must be a string with max 200 characters");
+        }
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
+/**
+ * Education validation
+ */
+const validateEducation = [
+  body("institution")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Institution name must be between 1 and 100 characters")
+    .trim(),
+  body("degree")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Degree must be between 1 and 100 characters")
+    .trim(),
+  body("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid date"),
+  body("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid date"),
+  body("location")
+    .optional()
+    .isLength({ max: 100 })
+    .withMessage("Location must be less than 100 characters")
+    .trim(),
+  body("description")
+    .optional()
+    .isLength({ max: 500 })
+    .withMessage("Description must be less than 500 characters")
+    .trim(),
+  body("educationType")
+    .optional()
+    .isIn(["degree", "certification", "certificate", "course"])
+    .withMessage("Education type must be one of: degree, certification, certificate, course"),
+  body("gpa")
+    .optional()
+    .isLength({ max: 10 })
+    .withMessage("GPA must be less than 10 characters"),
+  body("achievements")
+    .optional()
+    .isArray()
+    .withMessage("Achievements must be an array")
+    .custom((achievements) => {
+      if (achievements.length > 10) {
+        throw new Error("Maximum 10 achievements allowed");
+      }
+      for (const achievement of achievements) {
+        if (typeof achievement !== "string" || achievement.length > 200) {
+          throw new Error("Each achievement must be a string with max 200 characters");
+        }
+      }
+      return true;
+    }),
+  body("courses")
+    .optional()
+    .isArray()
+    .withMessage("Courses must be an array")
+    .custom((courses) => {
+      if (courses.length > 20) {
+        throw new Error("Maximum 20 courses allowed");
+      }
+      for (const course of courses) {
+        if (typeof course !== "string" || course.length > 100) {
+          throw new Error("Each course must be a string with max 100 characters");
+        }
+      }
+      return true;
+    }),
+  handleValidationErrors,
+];
+
+/**
+ * Account update validation
+ */
+const validateAccountUpdate = [
+  body("name")
+    .optional()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Name must be between 1 and 100 characters")
+    .trim(),
+  body("username")
+    .optional()
+    .isLength({ min: 5, max: 20 })
+    .withMessage("Username must be between 5 and 20 characters")
+    .matches(/^[a-z0-9-]+$/)
+    .withMessage("Username can only contain lowercase letters, numbers, and hyphens")
+    .custom((value) => {
+      if (value && value.includes("--")) {
+        throw new Error("Username cannot contain consecutive hyphens");
+      }
+      if (value && (value.startsWith("-") || value.endsWith("-"))) {
+        throw new Error("Username cannot start or end with hyphens");
+      }
+      return true;
+    }),
+  body("instantMessageSubject")
+    .optional()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Instant message subject must be between 1 and 100 characters")
+    .trim(),
+  body("instantMessageBody")
+    .optional()
+    .isLength({ min: 1, max: 500 })
+    .withMessage("Instant message body must be between 1 and 500 characters")
+    .trim(),
+  handleValidationErrors,
+];
+
+/**
+ * Email validation
+ */
+const validateEmail = [
+  body("senderEmail")
+    .isEmail()
+    .withMessage("Please provide a valid sender email")
+    .normalizeEmail(),
+  body("receiverEmail")
+    .isEmail()
+    .withMessage("Please provide a valid receiver email")
+    .normalizeEmail(),
+  body("message")
+    .isLength({ min: 1, max: 1000 })
+    .withMessage("Message must be between 1 and 1000 characters")
+    .trim(),
+  handleValidationErrors,
+];
+
+/**
+ * Visibility settings validation
+ */
+const validateVisibilitySettings = [
+  body("showLinks")
+    .optional()
+    .isBoolean()
+    .withMessage("showLinks must be a boolean"),
+  body("showExperience")
+    .optional()
+    .isBoolean()
+    .withMessage("showExperience must be a boolean"),
+  body("showPortfolio")
+    .optional()
+    .isBoolean()
+    .withMessage("showPortfolio must be a boolean"),
+  body("showEducation")
+    .optional()
+    .isBoolean()
+    .withMessage("showEducation must be a boolean"),
+  body("showTitles")
+    .optional()
+    .isBoolean()
+    .withMessage("showTitles must be a boolean"),
+  handleValidationErrors,
+];
+
+module.exports = {
+  handleValidationErrors,
+  validateGoogleAuth,
+  validateGoogleAuth,
+};

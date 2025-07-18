@@ -1,0 +1,56 @@
+# Root level gitignore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Debug scripts (project-specific)
+debug-*.js
+test-*.js
+test-*.sh
+validate.sh
+implementation-summary.js
+duration-implementation-complete.js
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Node modules (just in case)
+node_modules/
+
+# Build outputs
+dist/
+build/

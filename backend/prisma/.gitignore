@@ -1,0 +1,19 @@
+# Prisma gitignore
+
+# Generated Prisma client
+generated/
+
+# Database files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Migration files (keep the migration_lock.toml but ignore specific migrations)
+migrations/
+!migrations/migration_lock.toml
+
+# Backup files
+*.backup
+*.dump
+*.sql
