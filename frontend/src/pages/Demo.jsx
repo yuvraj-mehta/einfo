@@ -35,7 +35,7 @@ const Demo = () => {
       </div>
 
       {/* Main Content Container - Custom spacing for profile and links */}
-      <div className="w-full max-w-lg mx-auto pt-40 pb-40">
+      <div className="w-full max-w-lg mx-auto pt-40 pb-24">
         {/* Profile Section */}
         <UnifiedProfileSection profile={profile} canEdit={false} />
 
@@ -93,7 +93,7 @@ const Demo = () => {
 
         {/* Education Section */}
         {visibilitySettings.showEducation && education.length > 0 && (
-          <div className="space-y-4 mt-24">
+          <div className="space-y-4 mt-24 mb-16">
             {visibilitySettings.showTitles && (
               <div className="text-center">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-2">
