@@ -1,8 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import Logo from "@/components/Logo";
-import { Button } from "@/components/ui/button";
 import AuthButton from "@/components/AuthButton";
 import Footer from "@/components/Footer";
+import Logo from "@/components/Logo";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -15,11 +15,20 @@ const Index = () => {
       </nav>
 
       {/* Main Content - Centered */}
-      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 -mt-8">
         <div className="max-w-2xl mx-auto text-center space-y-8">
+          {/* Centralized Logo */}
+          <div className="flex justify-center mb-10">
+            <img 
+              src="/logo.png" 
+              alt="e-info.me logo" 
+              className="w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain"
+            />
+          </div>
+
           {/* Headline */}
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-            Showcase Your Developer Identity in One Link
+            Your Digital Identity, Simplified
           </h1>
 
           {/* Subtitle */}

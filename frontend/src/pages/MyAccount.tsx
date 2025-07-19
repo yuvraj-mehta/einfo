@@ -64,15 +64,17 @@ const MyAccount = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  // TODO: Re-enable when delete account is implemented
+  // const [deleteLoading, setDeleteLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
     {},
   );
   const [usernameCheckLoading, setUsernameCheckLoading] = useState(false);
   const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
-  const [verificationData, setVerificationData] = useState({
-    username: "",
-  });
+  // TODO: Re-enable when delete account is implemented
+  // const [verificationData, setVerificationData] = useState({
+  //   username: "",
+  // });
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   
   // Generate a more unique default username
@@ -374,6 +376,8 @@ const MyAccount = () => {
     setIsLoading(false);
   };
 
+  // TODO: Re-enable when delete account is implemented
+  /*
   const handleDeleteAccount = async () => {
     // Validate username
     if (verificationData.username !== accountData.username) {
@@ -417,6 +421,7 @@ const MyAccount = () => {
       setVerificationData({ username: "" });
     }
   };
+  */
 
   const getUserInitials = (name: string) => {
     return name
@@ -755,7 +760,9 @@ const MyAccount = () => {
           </div>
         </div>
 
-        {/* Danger Zone */}
+        {/* TODO: Implement proper delete account functionality */}
+        {/* Danger Zone - Temporarily commented out until backend implementation is complete */}
+        {/*
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-start gap-3 mb-4">
             <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -852,6 +859,7 @@ const MyAccount = () => {
             </AlertDialogContent>
           </AlertDialog>
         </div>
+        */}
       </div>
       <Footer />
     </div>

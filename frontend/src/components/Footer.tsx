@@ -1,6 +1,6 @@
 import React from "react";
-import { cn } from "@/lib/utils";
 import { APP_CONFIG } from "@/constants";
+import { cn } from "@/lib/utils";
 import type { WithClassName } from "@/types";
 
 interface FooterProps extends WithClassName {

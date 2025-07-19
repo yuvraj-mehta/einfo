@@ -154,9 +154,8 @@ const Dashboard: React.FC = () => {
           </header>
 
           {/* Stats Section */}
-          {/* Stats Section */}
           <section
-            className="grid md:grid-cols-2 gap-6 mb-16"
+            className="grid md:grid-cols-3 gap-6 mb-16"
             aria-labelledby="stats-heading"
           >
             <h2 id="stats-heading" className="sr-only">
@@ -185,6 +184,31 @@ const Dashboard: React.FC = () => {
                 )}
                 <p className="text-sm text-gray-500">
                   People who viewed your profile
+                </p>
+              </div>
+            </div>
+
+            {/* Brand Card with Logo */}
+            <div 
+              onClick={() => user?.username && (window.location.href = `/@${user.username}`)}
+              className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-sm p-6 text-center hover:shadow-md transition-all duration-200 cursor-pointer hover:scale-105 transform"
+            >
+              <div className="flex justify-center mb-4">
+                <img 
+                  src="/logo.png" 
+                  alt="E-Info Logo" 
+                  className="h-12 w-auto filter brightness-0 invert"
+                />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
+                  Powered by
+                </h3>
+                <p className="text-lg font-bold text-white">
+                  E-Info
+                </p>
+                <p className="text-sm text-gray-400">
+                  Simplifying Your Digital Presence
                 </p>
               </div>
             </div>
