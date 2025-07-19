@@ -1,3 +1,12 @@
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { PersonProfile } from "@/lib/profileData";
+import { api } from "@/services/api";
+import { useAuthStore } from "@/stores";
+
 import {
   useState,
   forwardRef,
@@ -22,14 +31,6 @@ import {
   Zap,
   Check,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { PersonProfile } from "@/lib/profileData";
-import { useAuthStore } from "@/stores";
-import { toast } from "sonner";
-import { api } from "@/services/api";
-import { useParams } from "react-router-dom";
 
 interface UnifiedDigitalCardProps {
   profile: PersonProfile;
@@ -159,6 +160,7 @@ const EditableField = ({
   placeholder,
   className = "",
   multiline = false,
+  maxLength,
 }: {
   value: string;
   isEditing: boolean;
@@ -166,30 +168,59 @@ const EditableField = ({
   placeholder?: string;
   className?: string;
   multiline?: boolean;
+  maxLength?: number;
 }) => {
+  const handleChange = (newValue: string) => {
+    if (maxLength && newValue.length > maxLength) {
+      return; // Don't allow input beyond max length
+    }
+    onChange?.(newValue);
+  };
+
   if (!isEditing) {
     return <span className={className}>{value}</span>;
   }
 
   if (multiline) {
     return (
-      <Textarea
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        placeholder={placeholder}
-        className={`${className} min-h-[60px] resize-none bg-blue-50/50 border-blue-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-400`}
-        onClick={(e) => e.stopPropagation()}
-      />
+      <div>
+        <Textarea
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={placeholder}
+          className={`${className} min-h-[60px] resize-none bg-blue-50/50 border-blue-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-400`}
+          onClick={(e) => e.stopPropagation()}
+        />
+        {maxLength && (
+          <div className="mt-1 text-right">
+            <p className={`text-xs ${
+              value.length > maxLength * 0.9 
+                ? value.length >= maxLength 
+                  ? 'text-red-500' 
+                  : 'text-orange-500'
+                : 'text-gray-500'
+            }`}>
+              {value.length}/{maxLength} characters
+            </p>
+            {value.length >= maxLength && (
+              <p className="text-xs text-red-500 mt-1">
+                Character limit reached
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     );
   }
 
   return (
     <Input
       value={value}
-      onChange={(e) => onChange?.(e.target.value)}
+      onChange={(e) => handleChange(e.target.value)}
       placeholder={placeholder}
       className={`${className} bg-blue-50/50 border-blue-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-400`}
       onClick={(e) => e.stopPropagation()}
+      maxLength={maxLength}
     />
   );
 };
@@ -263,11 +294,21 @@ const EditableSkills = ({
   onChange?: (skills: string[]) => void;
 }) => {
   const [newSkill, setNewSkill] = useState("");
+  const [showLimitError, setShowLimitError] = useState(false);
 
   const addSkill = () => {
     if (newSkill.trim() && !skills.includes(newSkill.trim()) && onChange) {
+      // Check if user already has 25 skills
+      if (skills.length >= 25) {
+        setShowLimitError(true);
+        // Hide error after 3 seconds
+        setTimeout(() => setShowLimitError(false), 3000);
+        return;
+      }
+      
       onChange([...skills, newSkill.trim()]);
       setNewSkill("");
+      setShowLimitError(false);
     }
   };
 
@@ -301,7 +342,7 @@ const EditableSkills = ({
           </span>
         ))}
 
-        {isEditing && onChange && (
+        {isEditing && onChange && skills.length < 25 && (
           <div className="inline-flex items-center gap-1">
             <Input
               value={newSkill}
@@ -319,6 +360,25 @@ const EditableSkills = ({
           </div>
         )}
       </div>
+      
+      {/* Skills count and limit message */}
+      {isEditing && onChange && (
+        <div className="mt-2 text-center">
+          <p className="text-xs text-gray-500">
+            {skills.length}/25 skills
+          </p>
+          {skills.length >= 25 && (
+            <p className="text-xs text-red-500 mt-1">
+              Maximum 25 skills allowed
+            </p>
+          )}
+          {showLimitError && (
+            <p className="text-xs text-red-500 mt-1 animate-pulse">
+              You can't add more than 25 skills
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -677,6 +737,7 @@ Best regards`;
                     placeholder="Write your bio..."
                     className="text-gray-700 text-sm leading-relaxed text-center md:text-left w-full"
                     multiline
+                    maxLength={400}
                   />
                 </div>
 

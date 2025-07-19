@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import ProjectShowcase from "@/components/ProjectShowcase";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { IconPicker } from "@/components/ui/icon-picker";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
+
 import {
   Edit3,
   Save,
@@ -10,12 +17,6 @@ import {
   Eye,
   Folder,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { IconPicker } from "@/components/ui/icon-picker";
-import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
-import ProjectShowcase from "@/components/ProjectShowcase";
 import {
   PortfolioProject,
   defaultPortfolioProjects,
@@ -56,6 +57,17 @@ const EditablePortfolioItem = ({
     useState<PortfolioProject>(project);
 
   const handleFieldChange = (field: keyof PortfolioProject, value: string) => {
+    // Apply character limits
+    if (field === "title" && value.length > 50) {
+      return; // Don't allow input beyond 50 characters
+    }
+    if (field === "category" && value.length > 60) {
+      return; // Don't allow input beyond 60 characters
+    }
+    if (field === "description" && value.length > 80) {
+      return; // Don't allow input beyond 80 characters
+    }
+    
     const updated = { ...editingProject, [field]: value };
     setEditingProject(updated);
     onUpdate(updated);
@@ -66,6 +78,14 @@ const EditablePortfolioItem = ({
     field: keyof (typeof project.images)[0],
     value: string,
   ) => {
+    // Apply character limits for image fields
+    if (field === "title" && value.length > 75) {
+      return; // Don't allow input beyond 75 characters
+    }
+    if (field === "description" && value.length > 600) {
+      return; // Don't allow input beyond 600 characters
+    }
+    
     const updatedImages = [...editingProject.images];
     updatedImages[imageIndex] = {
       ...updatedImages[imageIndex],
@@ -77,11 +97,16 @@ const EditablePortfolioItem = ({
   };
 
   const handleAddImage = () => {
+    // Limit to maximum 8 images
+    if (editingProject.images.length >= 8) {
+      return; // Don't allow more than 8 images
+    }
+    
     const newImage = {
       id: `image-${Date.now()}`,
       url: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center",
-      title: "New Image",
-      description: "Add image description...",
+      title: "",
+      description: "",
     };
     const updated = {
       ...editingProject,
@@ -153,7 +178,24 @@ const EditablePortfolioItem = ({
                 onChange={(e) => handleFieldChange("title", e.target.value)}
                 placeholder="e.g., Mobile App Design"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={50}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingProject.title.length > 45 
+                    ? editingProject.title.length >= 50 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingProject.title.length}/50 characters
+                </p>
+                {editingProject.title.length >= 50 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -164,7 +206,24 @@ const EditablePortfolioItem = ({
                 onChange={(e) => handleFieldChange("category", e.target.value)}
                 placeholder="e.g., UI/UX Design"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={60}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingProject.category.length > 54 
+                    ? editingProject.category.length >= 60 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingProject.category.length}/60 characters
+                </p>
+                {editingProject.category.length >= 60 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -178,7 +237,24 @@ const EditablePortfolioItem = ({
               onChange={(e) => handleFieldChange("description", e.target.value)}
               placeholder="Brief project description"
               className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+              maxLength={80}
             />
+            <div className="text-right">
+              <p className={`text-xs ${
+                editingProject.description.length > 72 
+                  ? editingProject.description.length >= 80 
+                    ? 'text-red-500' 
+                    : 'text-orange-500'
+                  : 'text-gray-500'
+              }`}>
+                {editingProject.description.length}/80 characters
+              </p>
+              {editingProject.description.length >= 80 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Character limit reached
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Project URL */}
@@ -212,16 +288,21 @@ const EditablePortfolioItem = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-gray-800">
-                Project Images
+                Project Images ({editingProject.images.length}/8)
               </label>
               <Button
                 onClick={handleAddImage}
                 variant="ghost"
                 size="sm"
-                className="text-gray-600 hover:text-gray-800 h-7 px-2 text-xs"
+                disabled={editingProject.images.length >= 8}
+                className={`h-7 px-2 text-xs ${
+                  editingProject.images.length >= 8
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Add Image
+                {editingProject.images.length >= 8 ? 'Max Reached' : 'Add Image'}
               </Button>
             </div>
 
@@ -274,7 +355,24 @@ const EditablePortfolioItem = ({
                         }
                         placeholder="Image title"
                         className="text-xs bg-white border-gray-300 text-gray-900 placeholder-gray-400 h-7"
+                        maxLength={75}
                       />
+                      <div className="text-right">
+                        <p className={`text-xs ${
+                          image.title.length > 67 
+                            ? image.title.length >= 75 
+                              ? 'text-red-500' 
+                              : 'text-orange-500'
+                            : 'text-gray-500'
+                        }`}>
+                          {image.title.length}/75 characters
+                        </p>
+                        {image.title.length >= 75 && (
+                          <p className="text-xs text-red-500 mt-1">
+                            Character limit reached
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -291,7 +389,24 @@ const EditablePortfolioItem = ({
                       }
                       placeholder="Image description"
                       className="text-xs bg-white border-gray-300 text-gray-900 placeholder-gray-400 min-h-16 resize-none"
+                      maxLength={600}
                     />
+                    <div className="text-right">
+                      <p className={`text-xs ${
+                        image.description.length > 540 
+                          ? image.description.length >= 600 
+                            ? 'text-red-500' 
+                            : 'text-orange-500'
+                          : 'text-gray-500'
+                      }`}>
+                        {image.description.length}/600 characters
+                      </p>
+                      {image.description.length >= 600 && (
+                        <p className="text-xs text-red-500 mt-1">
+                          Character limit reached
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

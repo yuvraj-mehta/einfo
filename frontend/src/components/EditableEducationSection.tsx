@@ -1,4 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import Education, { EducationData } from "@/components/Education";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { IconPicker } from "@/components/ui/icon-picker";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { defaultEducation } from "@/lib/educationData";
+import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
+
 import {
   Edit3,
   Save,
@@ -11,9 +19,6 @@ import {
   MapPin,
   Eye,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,10 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IconPicker } from "@/components/ui/icon-picker";
-import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
-import Education, { EducationData } from "@/components/Education";
-import { defaultEducation } from "@/lib/educationData";
 
 interface EditableEducationSectionProps {
   education?: EducationData[];
@@ -61,6 +62,26 @@ const EditableEducationItem = ({
     useState<EducationData>(education);
 
   const handleFieldChange = (field: keyof EducationData, value: string) => {
+    // Apply character limits
+    if (field === "degree" && value.length > 60) {
+      return; // Don't allow input beyond 60 characters
+    }
+    if (field === "institution" && value.length > 60) {
+      return; // Don't allow input beyond 60 characters
+    }
+    if (field === "duration" && value.length > 25) {
+      return; // Don't allow input beyond 25 characters
+    }
+    if (field === "location" && value.length > 40) {
+      return; // Don't allow input beyond 40 characters
+    }
+    if (field === "gpa" && value.length > 20) {
+      return; // Don't allow input beyond 20 characters
+    }
+    if (field === "description" && value.length > 250) {
+      return; // Don't allow input beyond 250 characters
+    }
+    
     const updated = { ...editingEducation, [field]: value };
     setEditingEducation(updated);
     onUpdate(updated);
@@ -76,6 +97,11 @@ const EditableEducationItem = ({
   };
 
   const handleAchievementChange = (achievementIndex: number, value: string) => {
+    // Apply character limit for achievements
+    if (value.length > 180) {
+      return; // Don't allow input beyond 180 characters
+    }
+    
     const updatedAchievements = [...editingEducation.achievements];
     updatedAchievements[achievementIndex] = value;
     const updated = { ...editingEducation, achievements: updatedAchievements };
@@ -84,9 +110,14 @@ const EditableEducationItem = ({
   };
 
   const handleAddAchievement = () => {
+    // Limit to maximum 10 achievements
+    if (editingEducation.achievements.length >= 10) {
+      return; // Don't allow more than 10 achievements
+    }
+    
     const updated = {
       ...editingEducation,
-      achievements: [...editingEducation.achievements, "New achievement..."],
+      achievements: [...editingEducation.achievements, ""],
     };
     setEditingEducation(updated);
     onUpdate(updated);
@@ -102,6 +133,11 @@ const EditableEducationItem = ({
   };
 
   const handleCourseChange = (courseIndex: number, value: string) => {
+    // Apply character limit for courses
+    if (value.length > 50) {
+      return; // Don't allow input beyond 50 characters
+    }
+    
     const updatedCourses = [...editingEducation.courses];
     updatedCourses[courseIndex] = value;
     const updated = { ...editingEducation, courses: updatedCourses };
@@ -110,9 +146,14 @@ const EditableEducationItem = ({
   };
 
   const handleAddCourse = () => {
+    // Limit to maximum 25 courses
+    if (editingEducation.courses.length >= 25) {
+      return; // Don't allow more than 25 courses
+    }
+    
     const updated = {
       ...editingEducation,
-      courses: [...editingEducation.courses, "New course..."],
+      courses: [...editingEducation.courses, ""],
     };
     setEditingEducation(updated);
     onUpdate(updated);
@@ -174,7 +215,24 @@ const EditableEducationItem = ({
                 onChange={(e) => handleFieldChange("degree", e.target.value)}
                 placeholder="e.g., Bachelor of Science in Computer Science"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={60}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingEducation.degree.length > 54 
+                    ? editingEducation.degree.length >= 60 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingEducation.degree.length}/60 characters
+                </p>
+                {editingEducation.degree.length >= 60 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -187,7 +245,24 @@ const EditableEducationItem = ({
                 }
                 placeholder="e.g., University of California"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={60}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingEducation.institution.length > 54 
+                    ? editingEducation.institution.length >= 60 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingEducation.institution.length}/60 characters
+                </p>
+                {editingEducation.institution.length >= 60 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -201,7 +276,24 @@ const EditableEducationItem = ({
                 onChange={(e) => handleFieldChange("duration", e.target.value)}
                 placeholder="e.g., 2016 - 2020"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={25}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingEducation.duration.length > 22 
+                    ? editingEducation.duration.length >= 25 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingEducation.duration.length}/25 characters
+                </p>
+                {editingEducation.duration.length >= 25 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -212,7 +304,24 @@ const EditableEducationItem = ({
                 onChange={(e) => handleFieldChange("location", e.target.value)}
                 placeholder="e.g., Berkeley, CA"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={40}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingEducation.location.length > 36 
+                    ? editingEducation.location.length >= 40 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingEducation.location.length}/40 characters
+                </p>
+                {editingEducation.location.length >= 40 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -245,7 +354,24 @@ const EditableEducationItem = ({
                 onChange={(e) => handleFieldChange("gpa", e.target.value)}
                 placeholder="e.g., 3.8/4.0"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={20}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  (editingEducation.gpa || "").length > 18 
+                    ? (editingEducation.gpa || "").length >= 20 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {(editingEducation.gpa || "").length}/20 characters
+                </p>
+                {(editingEducation.gpa || "").length >= 20 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -272,7 +398,24 @@ const EditableEducationItem = ({
               onChange={(e) => handleFieldChange("description", e.target.value)}
               placeholder="Brief description of your education and key learnings..."
               className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium min-h-20 resize-none"
+              maxLength={250}
             />
+            <div className="text-right">
+              <p className={`text-xs ${
+                editingEducation.description.length > 225 
+                  ? editingEducation.description.length >= 250 
+                    ? 'text-red-500' 
+                    : 'text-orange-500'
+                  : 'text-gray-500'
+              }`}>
+                {editingEducation.description.length}/250 characters
+              </p>
+              {editingEducation.description.length >= 250 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Character limit reached
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Image URL */}
@@ -306,38 +449,62 @@ const EditableEducationItem = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-gray-800">
-                Key Courses
+                Key Courses ({editingEducation.courses.length}/25)
               </label>
               <Button
                 onClick={handleAddCourse}
                 variant="ghost"
                 size="sm"
-                className="text-gray-600 hover:text-gray-800 h-7 px-2 text-xs"
+                disabled={editingEducation.courses.length >= 25}
+                className={`h-7 px-2 text-xs ${
+                  editingEducation.courses.length >= 25
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Add Course
+                {editingEducation.courses.length >= 25 ? 'Max Reached' : 'Add Course'}
               </Button>
             </div>
 
             <div className="space-y-2">
               {editingEducation.courses.map((course, courseIndex) => (
-                <div key={courseIndex} className="flex items-center gap-2">
-                  <Input
-                    value={course}
-                    onChange={(e) =>
-                      handleCourseChange(courseIndex, e.target.value)
-                    }
-                    placeholder="Course name"
-                    className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
-                  />
-                  <Button
-                    onClick={() => handleRemoveCourse(courseIndex)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
+                <div key={courseIndex} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={course}
+                      onChange={(e) =>
+                        handleCourseChange(courseIndex, e.target.value)
+                      }
+                      placeholder="Course name"
+                      className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
+                      maxLength={50}
+                    />
+                    <Button
+                      onClick={() => handleRemoveCourse(courseIndex)}
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                  <div className="text-right pr-10">
+                    <p className={`text-xs ${
+                      course.length > 45 
+                        ? course.length >= 50 
+                          ? 'text-red-500' 
+                          : 'text-orange-500'
+                        : 'text-gray-500'
+                    }`}>
+                      {course.length}/50 characters
+                    </p>
+                    {course.length >= 50 && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Character limit reached
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -347,16 +514,21 @@ const EditableEducationItem = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-gray-800">
-                Key Achievements
+                Key Achievements ({editingEducation.achievements.length}/10)
               </label>
               <Button
                 onClick={handleAddAchievement}
                 variant="ghost"
                 size="sm"
-                className="text-gray-600 hover:text-gray-800 h-7 px-2 text-xs"
+                disabled={editingEducation.achievements.length >= 10}
+                className={`h-7 px-2 text-xs ${
+                  editingEducation.achievements.length >= 10
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Add Achievement
+                {editingEducation.achievements.length >= 10 ? 'Max Reached' : 'Add Achievement'}
               </Button>
             </div>
 
@@ -365,27 +537,46 @@ const EditableEducationItem = ({
                 (achievement, achievementIndex) => (
                   <div
                     key={achievementIndex}
-                    className="flex items-center gap-2"
+                    className="space-y-1"
                   >
-                    <Input
-                      value={achievement}
-                      onChange={(e) =>
-                        handleAchievementChange(
-                          achievementIndex,
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Achievement description"
-                      className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
-                    />
-                    <Button
-                      onClick={() => handleRemoveAchievement(achievementIndex)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={achievement}
+                        onChange={(e) =>
+                          handleAchievementChange(
+                            achievementIndex,
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Achievement description"
+                        className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
+                        maxLength={180}
+                      />
+                      <Button
+                        onClick={() => handleRemoveAchievement(achievementIndex)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="text-right pr-10">
+                      <p className={`text-xs ${
+                        achievement.length > 162 
+                          ? achievement.length >= 180 
+                            ? 'text-red-500' 
+                            : 'text-orange-500'
+                          : 'text-gray-500'
+                      }`}>
+                        {achievement.length}/180 characters
+                      </p>
+                      {achievement.length >= 180 && (
+                        <p className="text-xs text-red-500 mt-1">
+                          Character limit reached
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ),
               )}

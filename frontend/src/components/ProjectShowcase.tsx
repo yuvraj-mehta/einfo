@@ -1,5 +1,5 @@
+import { ChevronLeft, ChevronRight, ExternalLink, Eye, X } from "lucide-react";
 import { useState } from "react";
-import { X, ExternalLink, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ProjectImage {
@@ -215,7 +215,7 @@ export default function ProjectShowcase({
               <h4 className="text-sm font-medium text-gray-900 mb-1">
                 {currentImage.title}
               </h4>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
                 {currentImage.description}
               </p>
             </div>

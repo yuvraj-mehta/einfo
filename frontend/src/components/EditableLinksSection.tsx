@@ -50,6 +50,14 @@ const EditableLinkItem = ({
   const [editingProject, setEditingProject] = useState<ProjectLink>(project);
 
   const handleFieldChange = (field: keyof ProjectLink, value: string) => {
+    // Apply character limits
+    if (field === "title" && value.length > 50) {
+      return; // Don't allow input beyond 50 characters
+    }
+    if (field === "description" && value.length > 65) {
+      return; // Don't allow input beyond 65 characters
+    }
+    
     const updated = { ...editingProject, [field]: value };
     setEditingProject(updated);
     onUpdate(updated);
@@ -107,7 +115,24 @@ const EditableLinkItem = ({
                 onChange={(e) => handleFieldChange("title", e.target.value)}
                 placeholder="e.g., LinkedIn"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={50}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingProject.title.length > 45 
+                    ? editingProject.title.length >= 50 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingProject.title.length}/50 characters
+                </p>
+                {editingProject.title.length >= 50 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -132,7 +157,24 @@ const EditableLinkItem = ({
               onChange={(e) => handleFieldChange("description", e.target.value)}
               placeholder="Brief description of this link"
               className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+              maxLength={65}
             />
+            <div className="text-right">
+              <p className={`text-xs ${
+                editingProject.description.length > 58 
+                  ? editingProject.description.length >= 65 
+                    ? 'text-red-500' 
+                    : 'text-orange-500'
+                  : 'text-gray-500'
+              }`}>
+                {editingProject.description.length}/65 characters
+              </p>
+              {editingProject.description.length >= 65 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Character limit reached
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Icon Selection */}

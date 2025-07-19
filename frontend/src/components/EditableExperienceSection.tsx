@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { IconPicker } from "@/components/ui/icon-picker";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
+import { defaultWorkExperiences } from "@/lib/workExperienceData";
+
 import {
   Edit3,
   Save,
@@ -11,16 +18,10 @@ import {
   MapPin,
   Eye,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { IconPicker } from "@/components/ui/icon-picker";
-import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
 import WorkExperience, {
   WorkExperienceData,
   WorkProject,
 } from "@/components/WorkExperience";
-import { defaultWorkExperiences } from "@/lib/workExperienceData";
 
 interface EditableExperienceSectionProps {
   experiences?: WorkExperienceData[];
@@ -60,12 +61,34 @@ const EditableExperienceItem = ({
     field: keyof WorkExperienceData,
     value: string,
   ) => {
+    // Apply character limits
+    if (field === "position" && value.length > 50) {
+      return; // Don't allow input beyond 50 characters
+    }
+    if (field === "company" && value.length > 50) {
+      return; // Don't allow input beyond 50 characters
+    }
+    if (field === "duration" && value.length > 25) {
+      return; // Don't allow input beyond 25 characters
+    }
+    if (field === "location" && value.length > 25) {
+      return; // Don't allow input beyond 25 characters
+    }
+    if (field === "description" && value.length > 320) {
+      return; // Don't allow input beyond 320 characters
+    }
+    
     const updated = { ...editingExperience, [field]: value };
     setEditingExperience(updated);
     onUpdate(updated);
   };
 
   const handleAchievementChange = (achievementIndex: number, value: string) => {
+    // Apply character limit for achievements
+    if (value.length > 150) {
+      return; // Don't allow input beyond 150 characters
+    }
+    
     const updatedAchievements = [...editingExperience.achievements];
     updatedAchievements[achievementIndex] = value;
     const updated = { ...editingExperience, achievements: updatedAchievements };
@@ -74,9 +97,14 @@ const EditableExperienceItem = ({
   };
 
   const handleAddAchievement = () => {
+    // Limit to maximum 8 achievements
+    if (editingExperience.achievements.length >= 8) {
+      return; // Don't allow more than 8 achievements
+    }
+    
     const updated = {
       ...editingExperience,
-      achievements: [...editingExperience.achievements, "New achievement..."],
+      achievements: [...editingExperience.achievements, ""],
     };
     setEditingExperience(updated);
     onUpdate(updated);
@@ -138,7 +166,24 @@ const EditableExperienceItem = ({
                 onChange={(e) => handleFieldChange("position", e.target.value)}
                 placeholder="e.g., Senior UI/UX Designer"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={50}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingExperience.position.length > 45 
+                    ? editingExperience.position.length >= 50 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingExperience.position.length}/50 characters
+                </p>
+                {editingExperience.position.length >= 50 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -149,7 +194,24 @@ const EditableExperienceItem = ({
                 onChange={(e) => handleFieldChange("company", e.target.value)}
                 placeholder="e.g., TechCorp Inc."
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={50}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingExperience.company.length > 45 
+                    ? editingExperience.company.length >= 50 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingExperience.company.length}/50 characters
+                </p>
+                {editingExperience.company.length >= 50 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -163,7 +225,24 @@ const EditableExperienceItem = ({
                 onChange={(e) => handleFieldChange("duration", e.target.value)}
                 placeholder="e.g., 2022 - Present"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={25}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingExperience.duration.length > 22 
+                    ? editingExperience.duration.length >= 25 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingExperience.duration.length}/25 characters
+                </p>
+                {editingExperience.duration.length >= 25 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-xs font-semibold text-gray-800">
@@ -174,7 +253,24 @@ const EditableExperienceItem = ({
                 onChange={(e) => handleFieldChange("location", e.target.value)}
                 placeholder="e.g., San Francisco, CA"
                 className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium"
+                maxLength={25}
               />
+              <div className="text-right">
+                <p className={`text-xs ${
+                  editingExperience.location.length > 22 
+                    ? editingExperience.location.length >= 25 
+                      ? 'text-red-500' 
+                      : 'text-orange-500'
+                    : 'text-gray-500'
+                }`}>
+                  {editingExperience.location.length}/25 characters
+                </p>
+                {editingExperience.location.length >= 25 && (
+                  <p className="text-xs text-red-500 mt-1">
+                    Character limit reached
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -188,7 +284,24 @@ const EditableExperienceItem = ({
               onChange={(e) => handleFieldChange("description", e.target.value)}
               placeholder="Brief description of your role and responsibilities..."
               className="text-sm bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 font-medium min-h-20 resize-none"
+              maxLength={320}
             />
+            <div className="text-right">
+              <p className={`text-xs ${
+                editingExperience.description.length > 288 
+                  ? editingExperience.description.length >= 320 
+                    ? 'text-red-500' 
+                    : 'text-orange-500'
+                  : 'text-gray-500'
+              }`}>
+                {editingExperience.description.length}/320 characters
+              </p>
+              {editingExperience.description.length >= 320 && (
+                <p className="text-xs text-red-500 mt-1">
+                  Character limit reached
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Icon Selection */}
@@ -209,16 +322,21 @@ const EditableExperienceItem = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-gray-800">
-                Key Achievements
+                Key Achievements ({editingExperience.achievements.length}/8)
               </label>
               <Button
                 onClick={handleAddAchievement}
                 variant="ghost"
                 size="sm"
-                className="text-gray-600 hover:text-gray-800 h-7 px-2 text-xs"
+                disabled={editingExperience.achievements.length >= 8}
+                className={`h-7 px-2 text-xs ${
+                  editingExperience.achievements.length >= 8
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Add Achievement
+                {editingExperience.achievements.length >= 8 ? 'Max Reached' : 'Add Achievement'}
               </Button>
             </div>
 
@@ -227,27 +345,46 @@ const EditableExperienceItem = ({
                 (achievement, achievementIndex) => (
                   <div
                     key={achievementIndex}
-                    className="flex items-center gap-2"
+                    className="space-y-1"
                   >
-                    <Input
-                      value={achievement}
-                      onChange={(e) =>
-                        handleAchievementChange(
-                          achievementIndex,
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Achievement description"
-                      className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
-                    />
-                    <Button
-                      onClick={() => handleRemoveAchievement(achievementIndex)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={achievement}
+                        onChange={(e) =>
+                          handleAchievementChange(
+                            achievementIndex,
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Achievement description"
+                        className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
+                        maxLength={150}
+                      />
+                      <Button
+                        onClick={() => handleRemoveAchievement(achievementIndex)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="text-right pr-10">
+                      <p className={`text-xs ${
+                        achievement.length > 135 
+                          ? achievement.length >= 150 
+                            ? 'text-red-500' 
+                            : 'text-orange-500'
+                          : 'text-gray-500'
+                      }`}>
+                        {achievement.length}/150 characters
+                      </p>
+                      {achievement.length >= 150 && (
+                        <p className="text-xs text-red-500 mt-1">
+                          Character limit reached
+                        </p>
+                      )}
+                    </div>
                   </div>
                 ),
               )}
@@ -346,11 +483,11 @@ export default function EditableExperienceSection({
       id: `custom-${Date.now()}`,
       company: "Company Name",
       position: "Job Title",
-      duration: "2024 - Present",
+      duration: "2024 - Present", 
       location: "City, State",
       description: "Add your role description here...",
       projects: [],
-      achievements: ["New achievement..."],
+      achievements: [""],
       icon: getIconFromName("Briefcase"),
     };
     setEditingExperiences([...editingExperiences, newExperience]);
