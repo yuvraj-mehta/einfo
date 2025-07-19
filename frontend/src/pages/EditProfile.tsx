@@ -77,21 +77,18 @@ const EditProfile = () => {
         const transformedPortfolio = (portfolio || []).map((project: any) => ({
           ...project,
           href: project.url || project.href, // Map url to href
-          icon: project.iconName ? getIconFromName(project.iconName) : null, // Convert iconName to icon component
         }));
         
         // Transform experience data to match frontend interface
         const transformedExperiences = (experiences || []).map((exp: any) => ({
           ...exp,
           duration: exp.duration || "Duration not specified", // Use duration field directly
-          icon: exp.iconName ? getIconFromName(exp.iconName) : null, // Convert iconName to icon component
         }));
         
         // Transform education data to match frontend interface
         const transformedEducation = (educationData || []).map((edu: any) => ({
           ...edu,
           duration: edu.duration || "Duration not specified", // Use duration field directly
-          icon: edu.iconName ? getIconFromName(edu.iconName) : null, // Convert iconName to icon component
         }));
         
         // Update all store data with backend data
@@ -166,7 +163,7 @@ const EditProfile = () => {
       const backendPortfolio = newPortfolio.map((project: any) => ({
         ...project,
         url: project.href || project.url, // Map href back to url
-        iconName: typeof project.icon === 'string' ? project.icon : 'FolderOpen', // Extract icon name or default
+        // iconName is already stored as string, no conversion needed
       }));
       
       const response = await api.updatePortfolio(backendPortfolio);
@@ -188,7 +185,7 @@ const EditProfile = () => {
       const backendExperiences = newExperiences.map(exp => ({
         ...exp,
         duration: exp.duration, // Pass duration as-is
-        iconName: typeof exp.icon === 'string' ? exp.icon : 'Building', // Convert icon to iconName
+        // iconName is already stored as string, no conversion needed
       }));
       
       const response = await api.updateExperiences(backendExperiences);
@@ -210,7 +207,7 @@ const EditProfile = () => {
       const backendEducation = newEducation.map(edu => ({
         ...edu,
         duration: edu.duration, // Pass duration as-is
-        iconName: typeof edu.icon === 'string' ? edu.icon : 'GraduationCap', // Convert icon to iconName
+        // iconName is already stored as string, no conversion needed
       }));
       
       const response = await api.updateEducation(backendEducation);

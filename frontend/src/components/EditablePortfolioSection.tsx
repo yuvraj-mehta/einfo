@@ -274,9 +274,9 @@ const EditablePortfolioItem = ({
           <div className="space-y-1">
             <label className="text-xs font-semibold text-gray-800">Icon</label>
             <IconPicker
-              selectedIcon={editingProject.icon}
+              selectedIcon={editingProject.iconName ? getIconFromName(editingProject.iconName) : null}
               onIconSelect={(icon, iconName) => {
-                const updated = { ...editingProject, icon };
+                const updated = { ...editingProject, iconName }; // Store iconName string instead of React component
                 setEditingProject(updated);
                 onUpdate(updated);
               }}
@@ -438,7 +438,7 @@ const EditablePortfolioItem = ({
       <div className="p-4 flex items-center gap-4 text-left">
         {/* Icon */}
         <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-100 transition-colors duration-200">
-          {project.icon || <Folder className="w-4 h-4 text-gray-600" />}
+          {project.iconName ? getIconFromName(project.iconName) : <Folder className="w-4 h-4 text-gray-600" />}
         </div>
 
         {/* Content */}
@@ -513,11 +513,11 @@ export default function EditablePortfolioSection({
   const handleAddProject = () => {
     const newProject: PortfolioProject = {
       id: `custom-${Date.now()}`,
-      title: "New Project",
-      description: "Brief project description",
-      category: "Design",
+      title: "",
+      description: "",
+      category: "",
       href: "",
-      icon: getIconFromName("Folder"),
+      iconName: "Folder", // Store iconName as string
       images: [
         {
           id: `image-${Date.now()}`,

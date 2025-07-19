@@ -1,12 +1,4 @@
 import { PortfolioProject, ProjectImage } from "@/components/ProjectShowcase";
-import {
-  Palette,
-  Smartphone,
-  Globe,
-  Camera,
-  Code,
-  Briefcase,
-} from "lucide-react";
 
 // Re-export types for easy import
 export type { PortfolioProject, ProjectImage };
@@ -19,7 +11,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     description: "E-commerce iOS App",
     category: "UI/UX Design",
     href: "https://dribbble.com/shots/mobile-app",
-    icon: null,
+    iconName: "Smartphone",
     images: [
       {
         id: "mobile-1",
@@ -50,7 +42,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     description: "Analytics Platform",
     category: "Web Design",
     href: "https://behance.net/gallery/saas-dashboard",
-    icon: null,
+    iconName: "Globe",
     images: [
       {
         id: "web-1",
@@ -80,7 +72,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     title: "Brand Identity",
     description: "Tech Startup Branding",
     category: "Branding",
-    icon: null,
+    iconName: "Palette",
     images: [
       {
         id: "brand-1",
@@ -110,7 +102,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     title: "Photography",
     description: "Product & Lifestyle",
     category: "Photography",
-    icon: null,
+    iconName: "Camera",
     images: [
       {
         id: "photo-1",
@@ -141,7 +133,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     description: "Full-Stack Projects",
     category: "Development",
     href: "https://github.com/username/projects",
-    icon: null,
+    iconName: "Code",
     images: [
       {
         id: "dev-1",
@@ -171,7 +163,7 @@ export const defaultPortfolioProjects: PortfolioProject[] = [
     title: "Design Consulting",
     description: "Strategic Design",
     category: "Consulting",
-    icon: null,
+    iconName: "Briefcase",
     images: [
       {
         id: "consult-1",

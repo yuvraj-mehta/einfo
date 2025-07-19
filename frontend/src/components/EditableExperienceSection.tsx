@@ -308,9 +308,9 @@ const EditableExperienceItem = ({
           <div className="space-y-1">
             <label className="text-xs font-semibold text-gray-800">Icon</label>
             <IconPicker
-              selectedIcon={editingExperience.icon}
+              selectedIcon={editingExperience.iconName ? getIconFromName(editingExperience.iconName) : null}
               onIconSelect={(icon, iconName) => {
-                const updated = { ...editingExperience, icon };
+                const updated = { ...editingExperience, iconName }; // Store iconName string instead of React component
                 setEditingExperience(updated);
                 onUpdate(updated);
               }}
@@ -413,7 +413,7 @@ const EditableExperienceItem = ({
       <div className="p-4 flex items-center gap-4 text-left">
         {/* Icon */}
         <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-100 transition-colors duration-200">
-          {experience.icon || <Briefcase className="w-4 h-4 text-gray-600" />}
+          {experience.iconName ? getIconFromName(experience.iconName) : <Briefcase className="w-4 h-4 text-gray-600" />}
         </div>
 
         {/* Content */}
@@ -481,14 +481,14 @@ export default function EditableExperienceSection({
   const handleAddExperience = () => {
     const newExperience: WorkExperienceData = {
       id: `custom-${Date.now()}`,
-      company: "Company Name",
-      position: "Job Title",
-      duration: "2024 - Present", 
-      location: "City, State",
-      description: "Add your role description here...",
+      company: "",
+      position: "",
+      duration: "", 
+      location: "",
+      description: "",
       projects: [],
       achievements: [""],
-      icon: getIconFromName("Briefcase"),
+      iconName: "Briefcase", // Store iconName as string
     };
     setEditingExperiences([...editingExperiences, newExperience]);
   };

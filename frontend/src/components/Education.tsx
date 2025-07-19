@@ -1,5 +1,6 @@
-import { X, GraduationCap, Calendar, MapPin, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, GraduationCap, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getIconFromName } from "@/lib/iconUtils";
 
 interface EducationData {
   id: string;
@@ -8,7 +9,7 @@ interface EducationData {
   duration: string;
   location: string;
   description: string;
-  icon?: React.ReactNode;
+  iconName?: string; // Store icon name as string instead of React component
   type: "degree" | "certification" | "certificate" | "course";
   gpa?: string;
   achievements: string[];
@@ -50,7 +51,7 @@ export default function Education({
         >
           {/* Institution Icon */}
           <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-100 transition-colors duration-200">
-            {education.icon || (
+            {education.iconName ? getIconFromName(education.iconName) : (
               <GraduationCap className="w-4 h-4 text-gray-600" />
             )}
           </div>

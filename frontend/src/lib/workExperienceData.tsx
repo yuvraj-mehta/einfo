@@ -1,5 +1,4 @@
 import { WorkExperienceData, WorkProject } from "@/components/WorkExperience";
-import { Building2, Zap, Rocket, Users, Globe, Shield } from "lucide-react";
 
 // Example work experiences with projects and achievements
 export const defaultWorkExperiences: WorkExperienceData[] = [
@@ -11,7 +10,7 @@ export const defaultWorkExperiences: WorkExperienceData[] = [
     location: "San Francisco, CA",
     description:
       "Leading design initiatives for enterprise software products, managing a team of 3 designers, and establishing design systems across multiple product lines. Collaborating closely with product managers and engineering teams to deliver user-centered solutions.",
-    icon: null,
+    iconName: "Building2",
     projects: [
       {
         id: "dashboard-redesign",
@@ -51,7 +50,7 @@ export const defaultWorkExperiences: WorkExperienceData[] = [
     location: "New York, NY",
     description:
       "First design hire at a fast-growing fintech startup. Built the entire design foundation from scratch, including brand identity, user experience flows, and design processes. Worked directly with founders and engineering team.",
-    icon: null,
+    iconName: "Zap",
     projects: [
       {
         id: "payment-flow",
@@ -83,7 +82,7 @@ export const defaultWorkExperiences: WorkExperienceData[] = [
     location: "Los Angeles, CA",
     description:
       "Worked with diverse clients ranging from e-commerce to healthcare, delivering user-centered design solutions. Specialized in user research, wireframing, and prototyping for web and mobile applications.",
-    icon: null,
+    iconName: "Users",
     projects: [
       {
         id: "ecommerce-redesign",
@@ -115,7 +114,7 @@ export const defaultWorkExperiences: WorkExperienceData[] = [
     location: "Austin, TX",
     description:
       "Started my design career working on various web and mobile projects. Focused on learning industry best practices, design tools, and collaborating with senior designers and developers.",
-    icon: null,
+    iconName: "Rocket",
     projects: [
       {
         id: "restaurant-website",

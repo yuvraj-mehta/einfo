@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ExternalLink, Eye, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { getIconFromName } from "@/lib/iconUtils";
 
 interface ProjectImage {
   id: string;
@@ -14,7 +15,7 @@ interface PortfolioProject {
   title: string;
   description: string;
   href?: string;
-  icon?: React.ReactNode;
+  iconName?: string; // Store icon name as string instead of React component
   images: ProjectImage[];
   category: string;
 }
@@ -84,7 +85,7 @@ export default function ProjectShowcase({
           >
             {/* Icon */}
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-100 transition-colors duration-200">
-              {project.icon || <Eye className="w-4 h-4 text-gray-600" />}
+              {project.iconName ? getIconFromName(project.iconName) : <Eye className="w-4 h-4 text-gray-600" />}
             </div>
 
             {/* Content */}

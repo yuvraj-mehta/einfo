@@ -262,7 +262,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             <button
-              onClick={() => navigate(ROUTES.DEMO)}
+              onClick={() => navigate(user?.username ? `/@${user.username}` : ROUTES.DEMO)}
               className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
               aria-describedby="view-card-description"
             >

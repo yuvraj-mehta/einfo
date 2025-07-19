@@ -478,9 +478,9 @@ const MyAccount = () => {
       </div>
 
       {/* Main Content Container */}
-      <div className="w-full max-w-md mx-auto pt-24 pb-24 space-y-20">
+      <div className="w-full max-w-md mx-auto pt-24 pb-24 space-y-6">
         {/* Back Button */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-16">
           <Link
             to="/mycard"
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"

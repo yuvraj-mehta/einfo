@@ -1,5 +1,6 @@
-import { X, Briefcase, Calendar, MapPin } from "lucide-react";
+import { Briefcase, Calendar, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getIconFromName } from "@/lib/iconUtils";
 
 interface WorkProject {
   id: string;
@@ -15,7 +16,7 @@ interface WorkExperienceData {
   duration: string;
   location: string;
   description: string;
-  icon?: React.ReactNode;
+  iconName?: string; // Store icon name as string instead of React component
   projects: WorkProject[];
   achievements: string[];
 }
@@ -47,7 +48,7 @@ export default function WorkExperience({
         >
           {/* Company Icon */}
           <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-100 transition-colors duration-200">
-            {experience.icon || <Briefcase className="w-4 h-4 text-gray-600" />}
+            {experience.iconName ? getIconFromName(experience.iconName) : <Briefcase className="w-4 h-4 text-gray-600" />}
           </div>
 
           {/* Content */}

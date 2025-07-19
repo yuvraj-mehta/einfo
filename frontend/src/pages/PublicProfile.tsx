@@ -91,17 +91,14 @@ const PublicProfile = () => {
           portfolio: apiData.portfolio ? apiData.portfolio.map((project: any) => ({
             ...project,
             href: project.url || project.href, // Map url to href
-            icon: project.iconName ? getIconFromName(project.iconName) : null, // Convert iconName to icon component
           })) : [],
           experiences: apiData.experiences ? apiData.experiences.map((exp: any) => ({
             ...exp,
             duration: exp.duration || "Duration not specified", // Use duration field directly
-            icon: exp.iconName ? getIconFromName(exp.iconName) : null, // Convert iconName to icon component
           })) : [],
           education: apiData.education ? apiData.education.map((edu: any) => ({
             ...edu,
             duration: edu.duration || "Duration not specified", // Use duration field directly
-            icon: edu.iconName ? getIconFromName(edu.iconName) : null, // Convert iconName to icon component
           })) : [],
           links: apiData.links ? apiData.links.map((link: any) => ({
             ...link,
