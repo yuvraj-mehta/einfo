@@ -88,11 +88,23 @@ const Dashboard: React.FC = () => {
   // Show loading while checking auth
   if (authLoading) {
     return (
-      <BaseLayout background="gray" centered>
-        <div className="min-h-screen flex items-center justify-center">
-          <LoadingSpinner size="lg" label="Loading dashboard..." />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="w-16 h-16 object-contain animate-pulse"
+              style={{
+                filter: 'brightness(0)',
+                animation: 'logo-fade 2s ease-in-out infinite'
+              }}
+            />
+          </div>
+          <LoadingSpinner size="lg" />
+          <p className="text-gray-800 font-light">Turning Personality into Pixels...</p>
         </div>
-      </BaseLayout>
+      </div>
     );
   }
 

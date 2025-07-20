@@ -3,6 +3,7 @@ import Logo from "@/components/Logo";
 import { AlertCircle, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
@@ -181,12 +182,12 @@ const Auth = () => {
               )}
               {isLoading ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                  <LoadingSpinner size="sm" />
                   Signing in...
                 </div>
               ) : isInitializing ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                  <LoadingSpinner size="sm" />
                   Initializing...
                 </div>
               ) : !isGoogleReady ? (

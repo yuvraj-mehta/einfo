@@ -1,10 +1,10 @@
 import AuthButton from "@/components/AuthButton";
 import Footer from "@/components/Footer";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import Logo from "@/components/Logo";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -434,11 +434,24 @@ const MyAccount = () => {
   // Show loading while checking auth or syncing data
   if (authLoading || isSyncing || !isDataLoaded) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner
-          size="lg"
-          label={authLoading ? "Loading..." : "Syncing data..."}
-        />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="w-16 h-16 object-contain animate-pulse"
+              style={{
+                filter: 'brightness(0)',
+                animation: 'logo-fade 2s ease-in-out infinite'
+              }}
+            />
+          </div>
+          <LoadingSpinner size="lg" />
+          <p className="text-gray-800 font-light">
+            Turning Personality into Pixels...
+          </p>
+        </div>
       </div>
     );
   }
@@ -593,7 +606,7 @@ const MyAccount = () => {
                 {/* Username availability indicator */}
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   {usernameCheckLoading ? (
-                    <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                    <LoadingSpinner size="sm" />
                   ) : usernameAvailable === true ? (
                     <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
                       <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -703,12 +716,12 @@ const MyAccount = () => {
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <LoadingSpinner size="sm" />
                     Updating...
                   </div>
                 ) : usernameCheckLoading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin" />
+                    <LoadingSpinner size="sm" />
                     Checking Username...
                   </div>
                 ) : usernameAvailable === false ? (
@@ -848,7 +861,7 @@ const MyAccount = () => {
                 >
                   {deleteLoading ? (
                     <div className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <LoadingSpinner size="sm" />
                       Deleting...
                     </div>
                   ) : (

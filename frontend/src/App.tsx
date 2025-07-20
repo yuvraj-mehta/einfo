@@ -18,6 +18,7 @@ const MyAccount = React.lazy(() => import("./pages/MyAccount"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const PublicProfile = React.lazy(() => import("./pages/PublicProfile"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
+const LoaderShowcase = React.lazy(() => import("./pages/LoaderShowcase"));
 
 // Configure React Query with optimized defaults
 const queryClient = new QueryClient({
@@ -57,7 +58,7 @@ const App = () => {
     >
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <Suspense fallback={<PageLoader message="Loading page..." />}>
+                    <Suspense fallback={<PageLoader message="Turning Personality into Pixels..." />}>
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -67,6 +68,7 @@ const App = () => {
                 <Route path="/mycard" element={<EditProfile />} />
                 <Route path="/account" element={<MyAccount />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/loaders" element={<LoaderShowcase />} />
                 <Route path="/:username" element={<PublicProfile />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

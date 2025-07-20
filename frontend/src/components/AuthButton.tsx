@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores";
@@ -89,7 +90,7 @@ export default function AuthButton() {
   if (isLoading) {
     return (
       <div className="h-10 w-10 flex items-center justify-center">
-        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+        <LoadingSpinner size="sm" />
       </div>
     );
   }

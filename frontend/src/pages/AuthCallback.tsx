@@ -1,11 +1,11 @@
+import { AlertCircle, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "@/stores";
-import { googleOAuth } from "@/services/googleOAuth";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { googleOAuth } from "@/services/googleOAuth";
+import { useAuthStore } from "@/stores";
 
 const AuthCallback = () => {
   const { signIn, getRedirectPath } = useAuthStore();
@@ -78,13 +78,19 @@ const AuthCallback = () => {
       <div className="max-w-md mx-auto text-center space-y-6">
         {status === "loading" && (
           <>
-            <LoadingSpinner size="lg" />
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Authenticating
-              </h1>
-              <p className="text-gray-600">{message}</p>
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="w-16 h-16 object-contain animate-pulse"
+                style={{
+                  filter: 'brightness(0)',
+                  animation: 'logo-fade 2s ease-in-out infinite'
+                }}
+              />
             </div>
+            <LoadingSpinner size="lg" />
+            <p className="text-gray-800 font-light">Turning Personality into Pixels...</p>
           </>
         )}
 
