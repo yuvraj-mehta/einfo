@@ -123,7 +123,7 @@ check-users.js
 clear-stars.js
 
 # Prisma
-prisma/migrations/
+# prisma/migrations/
 !prisma/migrations/migration_lock.toml
 
 # Lock files
