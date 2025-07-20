@@ -88,50 +88,6 @@ const Auth = () => {
     }
   };
 
-  const handleDemoSignIn = async () => {
-    try {
-      // Clear any previous errors
-      clearError();
-      setGoogleError(null);
-
-      // Demo user data with random avatar
-      const demoUsers = [
-        {
-          id: "demo-1",
-          name: "Alex Johnson",
-          email: "alex.demo@example.com",
-          avatar:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-        },
-        {
-          id: "demo-2",
-          name: "Sarah Chen",
-          email: "sarah.demo@example.com",
-          avatar:
-            "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
-        },
-        {
-          id: "demo-3",
-          name: "Michael Rodriguez",
-          email: "michael.demo@example.com",
-          avatar:
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-        },
-      ];
-
-      // Pick a random demo user
-      const randomUser =
-        demoUsers[Math.floor(Math.random() * demoUsers.length)];
-
-      await signIn(randomUser);
-      const redirectTo = getRedirectPath();
-      navigate(redirectTo);
-    } catch (error) {
-      console.error("Demo sign in failed:", error);
-      setGoogleError(error.message || "Demo sign in failed");
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Bar */}
@@ -147,11 +103,20 @@ const Auth = () => {
       {/* Main Content - Centered */}
       <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
         <div className="max-w-md mx-auto space-y-8">
-          {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
-            <p className="text-gray-600">
-              Sign in to create and manage your developer profile
+          {/* Header with Logo */}
+          <div className="text-center space-y-6">
+            {/* Logo */}
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo.png" 
+                alt="E-Info Logo" 
+                className="auth-logo w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 object-contain"
+              />
+            </div>
+            
+            <h1 className="text-4xl font-bold text-gray-900">Welcome</h1>
+            <p className="text-gray-600 text-xl">
+              Sign in to create and manage your digital identity
             </p>
           </div>
 
@@ -186,36 +151,6 @@ const Auth = () => {
 
           {/* Authentication Options */}
           <div className="space-y-4">
-            {/* Demo Sign In - Always Available */}
-            <Button
-              variant="default"
-              size="lg"
-              className="w-full flex items-center justify-center gap-3 py-3 bg-black hover:bg-gray-800 text-white transition-colors font-medium"
-              onClick={handleDemoSignIn}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
-                </div>
-              ) : (
-                <>🚀 Try Demo Account</>
-              )}
-            </Button>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
             {/* Google Sign In */}
             <Button
               variant="outline"

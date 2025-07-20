@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
-import { api, ApiResponse } from "@/services/api";
+import { useCallback, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ApiResponse, api } from "@/services/api";
 
 // Generic hook for API calls
 export function useApiCall<T = any>() {
@@ -74,9 +74,9 @@ export function useApiCall<T = any>() {
 export function useAuth() {
   const { execute, loading, error } = useApiCall();
 
-  const login = useCallback(
-    (credentials: { email: string; password: string }) => {
-      return execute(() => api.login(credentials), {
+  const googleLogin = useCallback(
+    (googleToken: string, username?: string) => {
+      return execute(() => api.googleLogin(googleToken, username), {
         showSuccessToast: true,
         successMessage: "Successfully logged in!",
       });
@@ -84,16 +84,10 @@ export function useAuth() {
     [execute],
   );
 
-  const register = useCallback(
-    (userData: {
-      username: string;
-      email: string;
-      password: string;
-      name: string;
-    }) => {
-      return execute(() => api.register(userData), {
-        showSuccessToast: true,
-        successMessage: "Account created successfully!",
+  const checkUsername = useCallback(
+    (username: string) => {
+      return execute(() => api.checkUsername(username), {
+        showErrorToast: false,
       });
     },
     [execute],
@@ -111,8 +105,8 @@ export function useAuth() {
   }, [execute]);
 
   return {
-    login,
-    register,
+    googleLogin,
+    checkUsername,
     logout,
     verifyToken,
     loading,

@@ -103,22 +103,6 @@ class ApiClient {
     return this.makeRequest(`/auth/check-username/${username}`);
   }
 
-  async login(credentials: {
-    email: string;
-    password: string;
-  }): Promise<ApiResponse<AuthResponse>> {
-    const response = await this.makeRequest<AuthResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-    });
-
-    if (response.success && response.data?.token) {
-      localStorage.setItem("authToken", response.data.token);
-    }
-
-    return response;
-  }
-
   async logout(): Promise<ApiResponse> {
     const response = await this.makeRequest("/auth/logout", {
       method: "POST",
