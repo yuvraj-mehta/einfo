@@ -1,5 +1,14 @@
+const logger = require("../utils/logger");
+
 const errorHandler = (err, req, res, next) => {
-  console.error("Error:", err);
+  logger.error("Application error", {
+    error: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.originalUrl,
+    body: req.body,
+    user: req.user?.id
+  });
 
   // Default error
   let error = {
@@ -56,6 +65,10 @@ const errorHandler = (err, req, res, next) => {
   // Don't expose sensitive information in production
   if (process.env.NODE_ENV === "production") {
     delete error.stack;
+    // Don't expose internal database errors
+    if (error.status === 500) {
+      error.message = "Internal server error";
+    }
   } else {
     error.stack = err.stack;
   }

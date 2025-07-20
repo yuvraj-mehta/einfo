@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const logger = require('../utils/logger');
 const prisma = new PrismaClient();
 
 /**
@@ -20,7 +21,11 @@ class SimpleAnalytics {
         }
       });
     } catch (error) {
-      console.error('Failed to increment profile view:', error);
+      logger.error('Failed to increment profile view', {
+        error: error.message,
+        stack: error.stack,
+        username: username
+      });
       // Silent fail - don't break the main flow
     }
   }
@@ -40,7 +45,11 @@ class SimpleAnalytics {
         }
       });
     } catch (error) {
-      console.error('Failed to increment click:', error);
+      logger.error('Failed to increment click', {
+        error: error.message,
+        stack: error.stack,
+        username: username
+      });
       // Silent fail - don't break the main flow
     }
   }
@@ -64,7 +73,11 @@ class SimpleAnalytics {
         totalClicks: user?.totalClicks || 0
       };
     } catch (error) {
-      console.error('Failed to get user analytics:', error);
+      logger.error('Failed to get user analytics', {
+        error: error.message,
+        stack: error.stack,
+        userId: userId
+      });
       return {
         totalViews: 0,
         totalClicks: 0

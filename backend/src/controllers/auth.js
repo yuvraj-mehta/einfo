@@ -3,6 +3,7 @@ const authService = require("../services/auth");
 const googleAuthService = require("../services/googleAuth");
 const emailService = require("../services/email");
 const { v4: uuidv4 } = require("uuid");
+const logger = require("../utils/logger");
 
 class AuthController {
   /**
@@ -90,13 +91,17 @@ class AuthController {
           },
         });
 
-        console.log(`New user created: ${user.email} with username: ${user.username}`);
+        logger.info("New user registered", { 
+          email: user.email, 
+          username: user.username,
+          googleId: user.googleId 
+        });
       } else {
-        // Update existing user data
+        // Update existing user data (don't overwrite custom name)
         user = await prisma.user.update({
           where: { id: user.id },
           data: {
-            name: googleUser.name,
+            // Don't update name - preserve user's custom name
             avatarUrl: googleUser.avatarUrl,
             emailVerified: googleUser.emailVerified,
           },
@@ -127,7 +132,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      console.error("Google login error:", error);
+      logger.error("Google login error", { error: error.message, stack: error.stack });
       next(error);
     }
   }
@@ -144,7 +149,7 @@ class AuthController {
         message: "Logout successful",
       });
     } catch (error) {
-      console.error("Logout error:", error);
+      logger.error("Logout error", { error: error.message });
       next(error);
     }
   }
@@ -172,7 +177,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      console.error("Token verification error:", error);
+      logger.error("Token verification error", { error: error.message });
       next(error);
     }
   }
@@ -205,7 +210,7 @@ class AuthController {
         },
       });
     } catch (error) {
-      console.error("Username check error:", error);
+      logger.error("Username check error", { error: error.message, username: req.params.username });
       next(error);
     }
   }
@@ -262,7 +267,7 @@ class AuthController {
         message: "Email verified successfully",
       });
     } catch (error) {
-      console.error("Email verification error:", error);
+      logger.error("Email verification error", { error: error.message });
       next(error);
     }
   }

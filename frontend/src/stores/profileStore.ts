@@ -99,32 +99,26 @@ export const useProfileStore = create<ProfileState>()(
     // Main update actions
     updateProfile: (newProfile: PersonProfile) => {
       set({ profile: newProfile });
-      console.log("Profile updated:", newProfile);
     },
 
     updateProjects: (newProjects: ProjectLink[]) => {
       set({ projects: newProjects });
-      console.log("Projects updated:", newProjects);
     },
 
     updatePortfolioProjects: (newProjects: PortfolioProject[]) => {
       set({ portfolioProjects: newProjects });
-      console.log("Portfolio projects updated:", newProjects);
     },
 
     updateWorkExperiences: (newExperiences: WorkExperienceData[]) => {
       set({ workExperiences: newExperiences });
-      console.log("Work experiences updated:", newExperiences);
     },
 
     updateEducation: (newEducation: EducationData[]) => {
       set({ education: newEducation });
-      console.log("Education updated:", newEducation);
     },
 
     updateVisibilitySettings: (newSettings: VisibilitySettings) => {
       set({ visibilitySettings: newSettings });
-      console.log("Visibility settings updated:", newSettings);
     },
 
     initializeWithUserData: (userData: any) => {
@@ -138,7 +132,6 @@ export const useProfileStore = create<ProfileState>()(
             profileImage: userData.avatar || currentProfile.profileImage,
           },
         });
-        console.log("Profile initialized with user data:", userData);
       }
     },
 
@@ -158,7 +151,6 @@ export const useProfileStore = create<ProfileState>()(
         isLoading: false,
         error: null,
       });
-      console.log("Profile reset to defaults");
     },
 
     // Individual item actions

@@ -8,6 +8,9 @@ const slowDown = require("express-slow-down");
 const path = require("path");
 require("dotenv").config();
 
+const logger = require("./utils/logger");
+const { checkMigrations } = require("./scripts/check-migrations");
+
 // Import routes
 const authRoutes = require("./routes/auth");
 const profileRoutes = require("./routes/profile");
@@ -42,12 +45,6 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map(o => o.trim());
     
-    console.log("CORS Debug:", {
-      origin: origin,
-      allowedOrigins: allowedOrigins,
-      includes: allowedOrigins.includes(origin)
-    });
-    
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
@@ -78,6 +75,18 @@ if (process.env.NODE_ENV !== "development") {
     legacyHeaders: false,
   });
 
+  // Stricter rate limiting for auth endpoints
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 auth requests per windowMs
+    message: {
+      success: false,
+      message: "Too many authentication attempts, please try again later",
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
   // Speed limiter for additional protection
   const speedLimiter = slowDown({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -88,11 +97,12 @@ if (process.env.NODE_ENV !== "development") {
 
   // Apply rate limiting to all routes
   app.use("/api/", limiter);
+  app.use("/api/auth/", authLimiter); // Stricter limits for auth
   app.use("/api/", speedLimiter);
   
-  console.log("Rate limiting enabled");
+  logger.info("Rate limiting enabled");
 } else {
-  console.log("Rate limiting disabled for development environment");
+  logger.info("Rate limiting disabled for development environment");
 }
 
 // Body parsing middleware
@@ -139,10 +149,51 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 8000;
 const HOST = process.env.API_HOST || "localhost";
 
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
-  console.log(`📊 Health check: http://${HOST}:${PORT}/health`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-});
+// Startup function with migration check
+async function startServer() {
+  try {
+    // Check migrations before starting (only in production)
+    if (process.env.NODE_ENV === 'production') {
+      logger.info('Checking migration status before startup...');
+      const migrationStatus = await checkMigrations();
+      
+      if (migrationStatus.status !== 'current') {
+        logger.error('Cannot start server: pending migrations detected', {
+          pendingMigrations: migrationStatus.pendingMigrations
+        });
+        console.error('\n❌ Cannot start server: Database migrations are not current!');
+        console.error('Pending migrations:', migrationStatus.pendingMigrations);
+        console.error('Run "npm run migrate-deploy" first, then restart the server.\n');
+        process.exit(1);
+      }
+      
+      logger.info('✅ All migrations are current, starting server...');
+    }
+    
+    // Start the server
+    app.listen(PORT, HOST, () => {
+      logger.info("Server started successfully", {
+        port: PORT,
+        host: HOST,
+        environment: process.env.NODE_ENV || "development",
+        urls: {
+          server: `http://${HOST}:${PORT}`,
+          health: `http://${HOST}:${PORT}/health`
+        }
+      });
+    });
+    
+  } catch (error) {
+    logger.error('Failed to start server', {
+      error: error.message,
+      stack: error.stack
+    });
+    console.error('\n❌ Server startup failed:', error.message);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();
 
 module.exports = app;

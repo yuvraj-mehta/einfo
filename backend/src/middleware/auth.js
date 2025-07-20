@@ -1,5 +1,6 @@
 const authService = require("../services/auth");
 const prisma = require("../config/database");
+const logger = require("../utils/logger");
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -58,7 +59,13 @@ const authMiddleware = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error);
+    logger.error("Auth middleware error", {
+      error: error.message,
+      stack: error.stack,
+      errorType: error.name,
+      path: req.path,
+      method: req.method
+    });
     
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({

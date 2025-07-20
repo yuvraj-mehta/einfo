@@ -1,4 +1,5 @@
 const prisma = require("../config/database");
+const logger = require("../utils/logger");
 
 class AnalyticsController {
   /**
@@ -19,7 +20,11 @@ class AnalyticsController {
         },
       });
     } catch (error) {
-      console.error("Error getting simple analytics:", error);
+      logger.error("Error getting simple analytics", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id
+      });
       res.status(500).json({
         success: false,
         message: "Failed to get analytics",

@@ -1,4 +1,5 @@
 const prisma = require("../config/database");
+const logger = require("../utils/logger");
 
 class ProfileController {
   /**
@@ -473,7 +474,12 @@ class ProfileController {
         },
       });
     } catch (error) {
-      console.error("Error tracking profile view:", error);
+      logger.error("Error tracking profile view", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        path: req.originalUrl
+      });
       // Don't throw error - analytics shouldn't break the main flow
     }
   }
@@ -526,7 +532,12 @@ class ProfileController {
         data: { profile: updatedProfile },
       });
     } catch (error) {
-      console.error("Error updating basic profile:", error);
+      logger.error("Error updating basic profile", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body
+      });
       res.status(500).json({
         success: false,
         message: "Failed to update basic profile",
@@ -567,7 +578,12 @@ class ProfileController {
         data: { visibilitySettings: updatedSettings },
       });
     } catch (error) {
-      console.error("Error updating visibility settings:", error);
+      logger.error("Error updating visibility settings", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body
+      });
       res.status(500).json({
         success: false,
         message: "Failed to update visibility settings",
@@ -625,7 +641,13 @@ class ProfileController {
         data: { links: updatedLinks },
       });
     } catch (error) {
-      console.error("Error updating links:", error);
+      logger.error("Error updating links", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body,
+        errorType: error.name
+      });
       
       // Check if it's a validation error
       if (error.name === 'PrismaClientValidationError') {
@@ -687,7 +709,12 @@ class ProfileController {
         data: { experiences: updatedExperiences },
       });
     } catch (error) {
-      console.error("Error updating experiences:", error);
+      logger.error("Error updating experiences", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body
+      });
       res.status(500).json({
         success: false,
         message: "Failed to update experiences",
@@ -776,7 +803,12 @@ class ProfileController {
         data: { portfolio: formattedPortfolio },
       });
     } catch (error) {
-      console.error("Error updating portfolio:", error);
+      logger.error("Error updating portfolio", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body
+      });
       res.status(500).json({
         success: false,
         message: "Failed to update portfolio",
@@ -834,7 +866,12 @@ class ProfileController {
         data: { education: updatedEducation },
       });
     } catch (error) {
-      console.error("Error updating education:", error);
+      logger.error("Error updating education", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.user?.id,
+        requestBody: req.body
+      });
       res.status(500).json({
         success: false,
         message: "Failed to update education",

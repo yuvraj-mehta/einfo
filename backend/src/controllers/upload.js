@@ -16,6 +16,24 @@ class UploadController {
         });
       }
 
+      // Validate file size (100KB = 102400 bytes)
+      const maxSize = 100 * 1024; // 100KB
+      if (req.file.size > maxSize) {
+        return res.status(400).json({
+          success: false,
+          message: `File too large. Maximum size is 100KB for profile images.`,
+        });
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed.",
+        });
+      }
+
       const result = await cloudinaryUpload.uploadProfileImage(req.file.buffer, userId);
 
       // Update user's profile image URL

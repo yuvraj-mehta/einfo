@@ -3,6 +3,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
+const logger = require("../utils/logger");
 
 // Configure Cloudinary
 cloudinary.config({
@@ -86,9 +87,13 @@ class CloudinaryUploadService {
         ).end(processedImage);
       });
 
-      return result.secure_url;
+      return result; // Return full result object with secure_url and public_id
     } catch (error) {
-      console.error("Profile image upload error:", error);
+      logger.error("Profile image upload error", {
+        error: error.message,
+        stack: error.stack,
+        fileName: file?.originalname
+      });
       throw new Error("Failed to upload profile image");
     }
   }
@@ -126,9 +131,13 @@ class CloudinaryUploadService {
         ).end(processedImage);
       });
 
-      return result.secure_url;
+      return result; // Return full result object with secure_url and public_id
     } catch (error) {
-      console.error("Portfolio image upload error:", error);
+      logger.error("Portfolio image upload error", {
+        error: error.message,
+        stack: error.stack,
+        fileName: file?.originalname
+      });
       throw new Error("Failed to upload portfolio image");
     }
   }
@@ -166,9 +175,14 @@ class CloudinaryUploadService {
         ).end(processedImage);
       });
 
-      return result.secure_url;
+      return result; // Return full result object with secure_url and public_id
     } catch (error) {
-      console.error("Education image upload error:", error);
+      logger.error("Education image upload error", {
+        error: error.message,
+        stack: error.stack,
+        fileName: file?.originalname,
+        userId: userId
+      });
       throw new Error("Failed to upload education image");
     }
   }
@@ -193,9 +207,14 @@ class CloudinaryUploadService {
         ).end(file.buffer);
       });
 
-      return result.secure_url;
+      return result; // Return full result object with secure_url and public_id
     } catch (error) {
-      console.error("Resume upload error:", error);
+      logger.error("Resume upload error", {
+        error: error.message,
+        stack: error.stack,
+        fileName: file?.originalname,
+        userId: userId
+      });
       throw new Error("Failed to upload resume");
     }
   }
@@ -205,7 +224,9 @@ class CloudinaryUploadService {
       // Extract public ID from Cloudinary URL
       const publicId = this.extractPublicId(url);
       if (!publicId) {
-        console.warn("Could not extract public ID from URL:", url);
+        logger.warn("Could not extract public ID from URL", {
+          url: url
+        });
         return;
       }
 
@@ -213,9 +234,17 @@ class CloudinaryUploadService {
       const resourceType = url.includes("/raw/") ? "raw" : "image";
       
       await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
-      console.log(`Deleted file: ${publicId}`);
+      logger.info("File deleted successfully", {
+        publicId: publicId,
+        resourceType: resourceType
+      });
     } catch (error) {
-      console.error("File deletion error:", error);
+      logger.error("File deletion error", {
+        error: error.message,
+        stack: error.stack,
+        url: url,
+        publicId: publicId
+      });
       // Don't throw error for deletion failures
     }
   }
@@ -238,7 +267,11 @@ class CloudinaryUploadService {
       
       return publicId;
     } catch (error) {
-      console.error("Error extracting public ID:", error);
+      logger.error("Error extracting public ID", {
+        error: error.message,
+        stack: error.stack,
+        url: url
+      });
       return null;
     }
   }

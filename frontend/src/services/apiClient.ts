@@ -1,3 +1,12 @@
+import { EducationData } from "@/components/Education";
+import { PortfolioProject } from "@/lib/portfolioData";
+import { PersonProfile } from "@/lib/profileData";
+import { ProjectLink } from "@/lib/profileData";
+import { WorkExperienceData } from "@/lib/workExperienceData";
+import { demoDataService } from "@/services/demoData";
+import { User } from "@/stores/authStore";
+import { VisibilitySettings } from "@/stores/profileStore";
+
 /**
  * Comprehensive API Client for E-Info.me Backend Integration
  * This replaces the existing api.ts with full backend support
@@ -10,19 +19,11 @@ import {
   API_ERROR_CODES,
   ApiResponse,
   PaginatedResponse,
-  ApiError,
+  ApiError as ConfigApiError,
   UPLOAD_CONFIG,
   ANALYTICS_EVENTS,
   DEFAULT_HEADERS,
 } from "@/config/api";
-import { PersonProfile } from "@/lib/profileData";
-import { ProjectLink } from "@/lib/profileData";
-import { PortfolioProject } from "@/lib/portfolioData";
-import { WorkExperienceData } from "@/lib/workExperienceData";
-import { EducationData } from "@/components/Education";
-import { VisibilitySettings } from "@/stores/profileStore";
-import { User } from "@/stores/authStore";
-import { demoDataService } from "@/services/demoData";
 
 // Extended types for API integration
 export interface AuthResponse {
@@ -118,7 +119,7 @@ class ApiClient {
   }
 
   private getHeaders(includeAuth = true): Record<string, string> {
-    const headers = { ...DEFAULT_HEADERS };
+    const headers: Record<string, string> = { ...DEFAULT_HEADERS };
 
     if (includeAuth) {
       const token = localStorage.getItem("api_token");
@@ -185,12 +186,12 @@ class ApiClient {
         const data = await response.json();
 
         if (!response.ok) {
-          const apiError: ApiError = {
+          const apiError = new ApiError({
             code: data.error?.code || "UNKNOWN_ERROR",
             message: data.error?.message || `HTTP ${response.status}`,
             details: data.error?.details,
             status: response.status,
-          };
+          });
 
           // Handle specific error cases
           if (response.status === HTTP_STATUS.UNAUTHORIZED) {
@@ -221,9 +222,9 @@ class ApiClient {
         if (
           error instanceof Error &&
           (error.name === "AbortError" ||
-            (error as ApiError).status === HTTP_STATUS.UNAUTHORIZED ||
-            (error as ApiError).status === HTTP_STATUS.FORBIDDEN ||
-            (error as ApiError).status === HTTP_STATUS.NOT_FOUND)
+            (error as any).status === HTTP_STATUS.UNAUTHORIZED ||
+            (error as any).status === HTTP_STATUS.FORBIDDEN ||
+            (error as any).status === HTTP_STATUS.NOT_FOUND)
         ) {
           throw error;
         }
@@ -704,7 +705,7 @@ class ApiClient {
     onProgress?: (progress: number) => void,
   ): Promise<ApiResponse<{ url: string }>> {
     // Validate file
-    if (!UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
       throw new ApiError({
         code: API_ERROR_CODES.INVALID_FILE_TYPE,
         message: "Invalid file type. Please upload a valid image.",
@@ -715,7 +716,7 @@ class ApiClient {
     if (file.size > UPLOAD_CONFIG.MAX_FILE_SIZE.AVATAR) {
       throw new ApiError({
         code: API_ERROR_CODES.FILE_TOO_LARGE,
-        message: "File too large. Maximum size is 500KB for profile images.",
+        message: "File too large. Maximum size is 100KB for profile images.",
         status: HTTP_STATUS.BAD_REQUEST,
       });
     }
@@ -734,7 +735,7 @@ class ApiClient {
     onProgress?: (progress: number) => void,
   ): Promise<ApiResponse<{ url: string }>> {
     // Validate file
-    if (!UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
       throw new ApiError({
         code: API_ERROR_CODES.INVALID_FILE_TYPE,
         message: "Invalid file type. Please upload a valid image.",
@@ -763,7 +764,7 @@ class ApiClient {
     file: File,
     onProgress?: (progress: number) => void,
   ): Promise<ApiResponse<{ url: string }>> {
-    if (!UPLOAD_CONFIG.ALLOWED_RESUME_TYPES.includes(file.type)) {
+    if (!UPLOAD_CONFIG.ALLOWED_RESUME_TYPES.includes(file.type as any)) {
       throw new ApiError({
         code: API_ERROR_CODES.INVALID_FILE_TYPE,
         message: "Invalid file type. Please upload a PDF or Word document.",
@@ -887,20 +888,15 @@ class ApiClient {
 // Create and export singleton instance
 export const apiClient = new ApiClient();
 
-// Export types
-export type {
-  AuthResponse,
-  CompleteProfileData,
-  PublicProfileData,
-  SearchProfileResult,
-  AnalyticsData,
-  ApiResponse,
-  ApiError,
-  PaginatedResponse,
-};
+// Export types (avoid duplicates with config/api)
+export type { ApiResponse, PaginatedResponse };
 
 // Error handling utility
 export class ApiError extends Error {
+  public code: string;
+  public status: number;
+  public details?: Array<{ field?: string; message: string }>;
+
   constructor(
     public error: {
       code: string;
@@ -911,6 +907,9 @@ export class ApiError extends Error {
   ) {
     super(error.message);
     this.name = "ApiError";
+    this.code = error.code;
+    this.status = error.status;
+    this.details = error.details;
   }
 }
 

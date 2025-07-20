@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const logger = require("../utils/logger");
 
 class EmailService {
   constructor() {
@@ -51,10 +52,19 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log("Mail sent successfully:", info.messageId);
+      logger.info("Mail sent successfully", {
+        messageId: info.messageId,
+        senderEmail: senderEmail,
+        recipientEmail: receiverEmail
+      });
       return info;
     } catch (error) {
-      console.error("Email sending failed:", error);
+      logger.error("Email sending failed", {
+        error: error.message,
+        stack: error.stack,
+        senderEmail: senderEmail,
+        recipientEmail: recipientEmail
+      });
       throw new Error("Failed to send email");
     }
   }
@@ -106,10 +116,19 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log("Verification email sent successfully:", info.messageId);
+      logger.info("Verification email sent successfully", {
+        messageId: info.messageId,
+        email: email,
+        name: name
+      });
       return info;
     } catch (error) {
-      console.error("Verification email sending failed:", error);
+      logger.error("Verification email sending failed", {
+        error: error.message,
+        stack: error.stack,
+        email: email,
+        name: name
+      });
       throw new Error("Failed to send verification email");
     }
   }
@@ -169,10 +188,20 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      console.log("Welcome email sent successfully:", info.messageId);
+      logger.info("Welcome email sent successfully", {
+        messageId: info.messageId,
+        email: email,
+        name: name,
+        username: username
+      });
       return info;
     } catch (error) {
-      console.error("Welcome email sending failed:", error);
+      logger.error("Welcome email sending failed", {
+        error: error.message,
+        stack: error.stack,
+        email: email,
+        name: name
+      });
       throw new Error("Failed to send welcome email");
     }
   }
@@ -183,10 +212,13 @@ class EmailService {
   async testConnection() {
     try {
       await this.transporter.verify();
-      console.log("Email service is ready");
+      logger.info("Email service is ready");
       return true;
     } catch (error) {
-      console.error("Email service configuration error:", error);
+      logger.error("Email service configuration error", {
+        error: error.message,
+        stack: error.stack
+      });
       return false;
     }
   }

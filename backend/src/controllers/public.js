@@ -1,5 +1,6 @@
 const prisma = require("../config/database");
 const emailService = require("../services/email");
+const logger = require("../utils/logger");
 
 class PublicController {
   /**
@@ -59,7 +60,12 @@ class PublicController {
         const simpleAnalytics = require('../services/simpleAnalytics');
         await simpleAnalytics.incrementProfileView(username);
       } catch (error) {
-        console.error("Error tracking profile view:", error);
+        logger.error("Error tracking profile view", {
+          error: error.message,
+          stack: error.stack,
+          username: username,
+          method: 'incrementProfileView'
+        });
         // Continue execution even if tracking fails
       }
 
@@ -215,7 +221,12 @@ class PublicController {
         message: "Message sent successfully",
       });
     } catch (error) {
-      console.error("Error sending message:", error);
+      logger.error("Error sending message", {
+        error: error.message,
+        stack: error.stack,
+        username: req.params.username,
+        senderEmail: req.body.senderEmail
+      });
       res.status(500).json({
         success: false,
         message: "Failed to send message",
@@ -427,7 +438,12 @@ class PublicController {
         },
       });
     } catch (error) {
-      console.error("Error tracking profile view:", error);
+      logger.error("Error tracking profile view", {
+        error: error.message,
+        stack: error.stack,
+        userId: req.params.userId,
+        path: req.originalUrl
+      });
       // Don't throw error - analytics shouldn't break the main flow
     }
   }
@@ -454,7 +470,12 @@ class PublicController {
         message: "Click tracked successfully",
       });
     } catch (error) {
-      console.error("Error tracking click:", error);
+      logger.error("Error tracking click", {
+        error: error.message,
+        stack: error.stack,
+        username: req.params.username,
+        method: 'incrementClick'
+      });
       res.status(500).json({
         success: false,
         message: "Failed to track click",

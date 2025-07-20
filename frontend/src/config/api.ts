@@ -164,7 +164,7 @@ export interface ApiError {
 // File Upload Configuration
 export const UPLOAD_CONFIG = {
   MAX_FILE_SIZE: {
-    AVATAR: 500 * 1024, // 500KB for profile avatars
+    AVATAR: 100 * 1024, // 100KB for profile avatars
     IMAGE: 5 * 1024 * 1024, // 5MB for other images
     RESUME: 25 * 1024 * 1024, // 25MB
   },

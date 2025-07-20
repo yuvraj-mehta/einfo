@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { API_CONFIG, UPLOAD_CONFIG } from "@/config/api";
 import { PersonProfile } from "@/lib/profileData";
 import { api } from "@/services/api";
 import { useAuthStore } from "@/stores";
@@ -30,6 +31,7 @@ import {
   Plus,
   Zap,
   Check,
+  Loader2,
 } from "lucide-react";
 
 interface UnifiedDigitalCardProps {
@@ -101,16 +103,75 @@ const EditableProfileImage = ({
   onImageChange?: (imageUrl: string) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const validateFile = (file: File): boolean => {
+    // Check file type
+    if (!UPLOAD_CONFIG.ALLOWED_IMAGE_TYPES.includes(file.type as any)) {
+      toast.error("Invalid file type. Please upload a valid image (JPEG, PNG, WebP, or GIF).");
+      return false;
+    }
+
+    // Check file size (100KB limit)
+    if (file.size > UPLOAD_CONFIG.MAX_FILE_SIZE.AVATAR) {
+      toast.error(`File too large. Maximum size is ${Math.round(UPLOAD_CONFIG.MAX_FILE_SIZE.AVATAR / 1024)}KB for profile images.`);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && onImageChange) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        onImageChange(result);
-      };
-      reader.readAsDataURL(file);
+    if (!file || !onImageChange) return;
+
+    // Validate file before upload
+    if (!validateFile(file)) {
+      return;
+    }
+
+    try {
+      setUploading(true);
+      
+      // Create form data for profile image upload
+      const formData = new FormData();
+      formData.append("image", file);
+
+      // Get auth token
+      const token = localStorage.getItem("authToken");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Upload to the correct profile image endpoint
+      const response = await fetch(`${API_CONFIG.BASE_URL}/upload/profile-image`, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Upload failed");
+      }
+
+      if (data.success && data.data?.url) {
+        onImageChange(data.data.url);
+        toast.success("Profile image uploaded successfully!");
+      } else {
+        toast.error("Failed to upload image. Please try again.");
+      }
+    } catch (error: any) {
+      console.error("Image upload error:", error);
+      toast.error(error.message || "Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+      // Reset the input so the same file can be selected again if needed
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -127,7 +188,7 @@ const EditableProfileImage = ({
             target.nextElementSibling?.classList.remove("hidden");
           }}
         />
-        <div className="hidden w-full h-full bg-gray-800 flex items-center justify-center text-white font-medium text-sm">
+        <div className="hidden w-full h-full bg-gray-800 items-center justify-center text-white font-medium text-sm">
           {initials}
         </div>
       </div>
@@ -135,16 +196,26 @@ const EditableProfileImage = ({
       {isEditing && onImageChange && (
         <>
           <button
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute -bottom-1 -right-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
+            onClick={() => !uploading && fileInputRef.current?.click()}
+            disabled={uploading}
+            className={`absolute -bottom-1 -right-1 text-white rounded-full p-1.5 shadow-lg transition-colors ${
+              uploading 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
           >
-            <Upload className="w-3 h-3" />
+            {uploading ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Upload className="w-3 h-3" />
+            )}
           </button>
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
             onChange={handleImageUpload}
+            disabled={uploading}
             className="hidden"
           />
         </>
@@ -578,14 +649,6 @@ Best regards`;
         : targetUsername;
 
       try {
-        console.log("Sending message:", {
-          title: messageTitle,
-          message: messageText,
-          senderEmail: user.email,
-          senderName: user.name,
-          recipient: cleanUsername,
-        });
-
         const response = await api.sendMessage(cleanUsername, {
           message: `Subject: ${messageTitle}\n\n${messageText}`,
           senderEmail: user.email,
