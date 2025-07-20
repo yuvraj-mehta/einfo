@@ -46,7 +46,7 @@ debug-*.js
 
 # Build and deployment files
 netlify.toml
-vercel.json
+# vercel.json
 
 # npm/yarn
 .npmrc
