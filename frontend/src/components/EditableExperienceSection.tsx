@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { PROFILE_LIMITS, getLimit, hasReachedLimit } from "@/constants/profileLimits";
 import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
 import { defaultWorkExperiences } from "@/lib/workExperienceData";
 
@@ -479,6 +481,12 @@ export default function EditableExperienceSection({
   };
 
   const handleAddExperience = () => {
+    // Check if limit is reached
+    if (hasReachedLimit(editingExperiences.length, 'EXPERIENCE')) {
+      toast.error(`Maximum ${getLimit('EXPERIENCE')} work experiences allowed.`);
+      return;
+    }
+
     const newExperience: WorkExperienceData = {
       id: `custom-${Date.now()}`,
       company: "",
@@ -636,10 +644,20 @@ export default function EditableExperienceSection({
             {/* Add New Experience Button */}
             <button
               onClick={handleAddExperience}
-              className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:text-gray-600 hover:border-gray-300 transition-colors duration-200 flex items-center justify-center gap-2"
+              disabled={hasReachedLimit(editingExperiences.length, 'EXPERIENCE')}
+              className={`w-full p-4 border-2 border-dashed rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 ${
+                hasReachedLimit(editingExperiences.length, 'EXPERIENCE')
+                  ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-gray-50'
+                  : 'border-gray-200 text-gray-500 hover:text-gray-600 hover:border-gray-300'
+              }`}
             >
               <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">Add New Experience</span>
+              <span className="text-sm font-medium">
+                {hasReachedLimit(editingExperiences.length, 'EXPERIENCE')
+                  ? `Maximum ${getLimit('EXPERIENCE')} experiences reached`
+                  : 'Add New Experience'
+                }
+              </span>
             </button>
           </>
         ) : (

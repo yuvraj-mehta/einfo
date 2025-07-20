@@ -1,9 +1,11 @@
 import ProjectShowcase from "@/components/ProjectShowcase";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { IconPicker } from "@/components/ui/icon-picker";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { PROFILE_LIMITS, getLimit, hasReachedLimit } from "@/constants/profileLimits";
 import { getIconFromName, getIconNameFromNode } from "@/lib/iconUtils";
 
 import {
@@ -511,6 +513,12 @@ export default function EditablePortfolioSection({
   };
 
   const handleAddProject = () => {
+    // Check if limit is reached
+    if (hasReachedLimit(editingProjects.length, 'PORTFOLIO')) {
+      toast.error(`Maximum ${getLimit('PORTFOLIO')} portfolio projects allowed.`);
+      return;
+    }
+
     const newProject: PortfolioProject = {
       id: `custom-${Date.now()}`,
       title: "",
@@ -677,10 +685,20 @@ export default function EditablePortfolioSection({
             {/* Add New Project Button */}
             <button
               onClick={handleAddProject}
-              className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:text-gray-600 hover:border-gray-300 transition-colors duration-200 flex items-center justify-center gap-2"
+              disabled={hasReachedLimit(editingProjects.length, 'PORTFOLIO')}
+              className={`w-full p-4 border-2 border-dashed rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 ${
+                hasReachedLimit(editingProjects.length, 'PORTFOLIO')
+                  ? 'border-gray-100 text-gray-300 cursor-not-allowed bg-gray-50'
+                  : 'border-gray-200 text-gray-500 hover:text-gray-600 hover:border-gray-300'
+              }`}
             >
               <Plus className="w-4 h-4" />
-              <span className="text-sm font-medium">Add New Project</span>
+              <span className="text-sm font-medium">
+                {hasReachedLimit(editingProjects.length, 'PORTFOLIO')
+                  ? `Maximum ${getLimit('PORTFOLIO')} projects reached`
+                  : 'Add New Project'
+                }
+              </span>
             </button>
           </>
         ) : (
