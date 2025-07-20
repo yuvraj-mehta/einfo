@@ -1,5 +1,8 @@
 import { WorkExperienceData, WorkProject } from "@/components/WorkExperience";
 
+// Re-export types for convenience
+export type { WorkExperienceData, WorkProject };
+
 // Example work experiences with projects and achievements
 export const defaultWorkExperiences: WorkExperienceData[] = [
   {

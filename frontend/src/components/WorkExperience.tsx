@@ -2,14 +2,14 @@ import { Briefcase, Calendar, MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getIconFromName } from "@/lib/iconUtils";
 
-interface WorkProject {
+export interface WorkProject {
   id: string;
   title: string;
   description: string;
   technologies?: string[];
 }
 
-interface WorkExperienceData {
+export interface WorkExperienceData {
   id: string;
   company: string;
   position: string;
@@ -136,6 +136,3 @@ export default function WorkExperience({
     </div>
   );
 }
-
-// Export types for easy use
-export type { WorkExperienceData, WorkProject };
