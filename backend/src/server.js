@@ -147,7 +147,17 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
-const HOST = process.env.API_HOST || "localhost";
+// const HOST = process.env.API_HOST || "localhost";
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : (process.env.API_HOST || "localhost");
+
+// Add root route for Render health checks
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "E-Info Backend API is running!",
+    status: "healthy",
+    version: "1.0.0"
+  });
+});
 
 // Startup function with migration check
 async function startServer() {
