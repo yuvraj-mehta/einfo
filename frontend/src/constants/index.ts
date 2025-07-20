@@ -38,7 +38,7 @@ export const DEFAULT_PROFILE = {
   name: "Pranav",
   jobTitle: "Developer & Consultant",
   bio: "Creating digital experiences that matter. Clean, functional, human-centered design.",
-  email: "alex@example.com",
+  email: "",
   website: "alexjohnson.design",
   location: "San Francisco",
   profileImage: "/placeholder.svg",

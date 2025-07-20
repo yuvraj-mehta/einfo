@@ -63,6 +63,7 @@ class ProfileController {
           name: user.name,
           jobTitle: user.profile?.jobTitle || "",
           bio: user.profile?.bio || "",
+          email: user.profile?.email || "",
           website: user.profile?.website || "",
           location: user.profile?.location || "",
           profileImage: user.profile?.profileImageUrl || user.avatarUrl || "",
@@ -317,6 +318,7 @@ class ProfileController {
         name,
         jobTitle,
         bio,
+        email,
         website,
         location,
         skills,
@@ -339,6 +341,7 @@ class ProfileController {
       const profileData = {};
       if (jobTitle !== undefined) profileData.jobTitle = jobTitle;
       if (bio !== undefined) profileData.bio = bio;
+      if (email !== undefined) profileData.email = email;
       if (website !== undefined) profileData.website = website;
       if (location !== undefined) profileData.location = location;
       if (skills !== undefined) profileData.skills = skills;
@@ -481,7 +484,7 @@ class ProfileController {
   async updateBasicProfile(req, res, next) {
     try {
       const userId = req.user.id;
-      const { name, jobTitle, bio, website, location, profileImage, resumeUrl, skills } = req.body;
+      const { name, jobTitle, bio, email, website, location, profileImage, resumeUrl, skills } = req.body;
 
       // Update user profile
       const updatedProfile = await prisma.userProfile.upsert({
@@ -489,6 +492,7 @@ class ProfileController {
         update: {
           jobTitle: jobTitle || "",
           bio: bio || "",
+          email: email || "",
           website: website || "",
           location: location || "",
           profileImageUrl: profileImage || "",
@@ -499,6 +503,7 @@ class ProfileController {
           userId,
           jobTitle: jobTitle || "",
           bio: bio || "",
+          email: email || "",
           website: website || "",
           location: location || "",
           profileImageUrl: profileImage || "",

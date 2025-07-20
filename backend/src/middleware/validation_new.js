@@ -65,10 +65,40 @@ const validateProfileUpdate = [
     .isLength({ max: 500 })
     .withMessage("Bio must be less than 500 characters")
     .trim(),
+  body("email")
+    .optional()
+    .custom((value) => {
+      if (value === "" || value === null || value === undefined) {
+        return true; // Allow empty values
+      }
+      // Only validate as email if there's a value
+      const validator = require('validator');
+      if (!validator.isEmail(value)) {
+        throw new Error("Please provide a valid email address");
+      }
+      return true;
+    })
+    .customSanitizer((value) => {
+      if (value === "" || value === null || value === undefined) {
+        return value; // Return as-is for empty values
+      }
+      // Only normalize if there's a value
+      const validator = require('validator');
+      return validator.normalizeEmail(value) || value;
+    }),
   body("website")
     .optional()
-    .isURL()
-    .withMessage("Please provide a valid website URL"),
+    .custom((value) => {
+      if (value === "" || value === null || value === undefined) {
+        return true; // Allow empty values
+      }
+      // Only validate as URL if there's a value
+      const validator = require('validator');
+      if (!validator.isURL(value)) {
+        throw new Error("Please provide a valid website URL");
+      }
+      return true;
+    }),
   body("location")
     .optional()
     .isLength({ max: 100 })

@@ -125,7 +125,7 @@ export const defaultProjects: ProjectLink[] = [
     description: "Direct Contact",
     projectDetails:
       "Get in touch directly for project inquiries, collaborations, or just to say hello. I typically respond within 24 hours.",
-    href: "mailto:alex@example.com",
+    href: "mailto:contact@example.com",
     icon: "Mail",
   },
 ];

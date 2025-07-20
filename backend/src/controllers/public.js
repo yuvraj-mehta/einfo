@@ -83,6 +83,7 @@ class PublicController {
           name: user.name,
           jobTitle: showTitles ? (user.profile?.jobTitle || "") : "",
           bio: user.profile?.bio || "",
+          email: user.profile?.email || "",
           website: user.profile?.website || "",
           location: user.profile?.location || "",
           profileImage: user.profile?.profileImageUrl || user.avatarUrl || "",

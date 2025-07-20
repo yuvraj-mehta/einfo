@@ -12,7 +12,7 @@ router.put("/account", authMiddleware, profileController.updateAccount);
 router.put("/instant-message", authMiddleware, profileController.updateInstantMessage);
 
 // New profile update routes
-router.put("/basic", authMiddleware, profileController.updateBasicProfile);
+router.put("/basic", authMiddleware, validateProfileUpdate, profileController.updateBasicProfile);
 router.put("/visibility", authMiddleware, profileController.updateVisibilitySettings);
 router.put("/links", authMiddleware, profileController.updateLinks);
 router.put("/experiences", authMiddleware, profileController.updateExperiences);

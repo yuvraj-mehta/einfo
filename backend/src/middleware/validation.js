@@ -65,8 +65,13 @@ const validateProfileUpdate = [
     .isLength({ max: 500 })
     .withMessage("Bio must be less than 500 characters")
     .trim(),
+  body("email")
+    .optional({ nullable: true, checkFalsy: true })
+    .isEmail()
+    .withMessage("Please provide a valid email address")
+    .normalizeEmail(),
   body("website")
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .isURL()
     .withMessage("Please provide a valid website URL"),
   body("location")
@@ -79,8 +84,8 @@ const validateProfileUpdate = [
     .isArray()
     .withMessage("Skills must be an array")
     .custom((skills) => {
-      if (skills.length > 20) {
-        throw new Error("Maximum 20 skills allowed");
+      if (skills.length > 30) {
+        throw new Error("Maximum 30 skills allowed");
       }
       for (const skill of skills) {
         if (typeof skill !== "string" || skill.length > 30) {

@@ -246,7 +246,7 @@ const EditableContactInfo = ({
   onIconClick?: () => void;
   showTick?: boolean;
 }) => (
-  <div className="flex items-center text-gray-600 justify-center md:justify-start">
+  <div className="flex items-center text-gray-600 justify-center md:justify-start min-w-0 w-full">
     {showTick ? (
       <Check className="w-4 h-4 mr-2 text-green-500 flex-shrink-0 transition-all duration-200" />
     ) : (
@@ -263,20 +263,25 @@ const EditableContactInfo = ({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         placeholder={placeholder}
-        className="text-xs bg-blue-50/50 border-blue-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 h-7"
+        className="text-xs bg-blue-50/50 border-blue-200 focus:border-blue-400 focus:ring-1 focus:ring-blue-400 h-7 min-w-0 w-full"
         onClick={(e) => e.stopPropagation()}
       />
     ) : (
       <span
-        className={`truncate text-xs ${
+        className={`text-xs min-w-0 flex-1 ${
           isClickable
             ? "cursor-pointer hover:text-gray-800 transition-colors"
             : ""
+        } ${
+          value.length > 30 
+            ? "overflow-hidden text-ellipsis whitespace-nowrap" 
+            : "break-words"
         }`}
         onClick={(e) => {
           e.stopPropagation();
           onClick?.();
         }}
+        title={value.length > 30 ? value : undefined} // Only show tooltip for very long text
       >
         {value}
       </span>
@@ -762,78 +767,88 @@ Best regards`;
                 )}
 
                 {/* Contact Information */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <EditableContactInfo
-                    icon={Mail}
-                    value={profile.email || ""}
-                    isEditing={isEditing}
-                    onChange={
-                      isEditing
-                        ? (value) => handleProfileFieldChange("email", value)
-                        : undefined
-                    }
-                    placeholder="email@example.com"
-                    isClickable={!isEditing}
-                    onClick={() =>
-                      !isEditing &&
-                      profile.email &&
-                      handleExternalLink(profile.email, true)
-                    }
-                    onIconClick={() =>
-                      !isEditing &&
-                      profile.email &&
-                      handleCopyWithAnimation(profile.email, "Email", "email")
-                    }
-                    showTick={copyStates.email}
-                  />
-                  <EditableContactInfo
-                    icon={Globe}
-                    value={profile.website || ""}
-                    isEditing={isEditing}
-                    onChange={
-                      isEditing
-                        ? (value) => handleProfileFieldChange("website", value)
-                        : undefined
-                    }
-                    placeholder="yourwebsite.com"
-                    isClickable={!isEditing}
-                    onClick={() =>
-                      !isEditing &&
-                      profile.website &&
-                      handleExternalLink(profile.website)
-                    }
-                    onIconClick={() =>
-                      !isEditing &&
-                      profile.website &&
-                      handleCopyWithAnimation(
-                        profile.website,
-                        "Website",
-                        "website",
-                      )
-                    }
-                    showTick={copyStates.website}
-                  />
-                  <EditableContactInfo
-                    icon={MapPin}
-                    value={profile.location || ""}
-                    isEditing={isEditing}
-                    onChange={
-                      isEditing
-                        ? (value) => handleProfileFieldChange("location", value)
-                        : undefined
-                    }
-                    placeholder="Your location"
-                    onIconClick={() =>
-                      !isEditing &&
-                      profile.location &&
-                      handleCopyWithAnimation(
-                        profile.location,
-                        "Location",
-                        "location",
-                      )
-                    }
-                    showTick={copyStates.location}
-                  />
+                <div className={`grid gap-3 md:gap-3.5 ${
+                  (profile.email || "").length > 20 
+                    ? "grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr]" 
+                    : "grid-cols-1 md:grid-cols-3"
+                }`}>
+                  <div className="min-w-0">
+                    <EditableContactInfo
+                      icon={Mail}
+                      value={profile.email || ""}
+                      isEditing={isEditing}
+                      onChange={
+                        isEditing
+                          ? (value) => handleProfileFieldChange("email", value)
+                          : undefined
+                      }
+                      placeholder="email@example.com"
+                      isClickable={!isEditing}
+                      onClick={() =>
+                        !isEditing &&
+                        profile.email &&
+                        handleExternalLink(profile.email, true)
+                      }
+                      onIconClick={() =>
+                        !isEditing &&
+                        profile.email &&
+                        handleCopyWithAnimation(profile.email, "Email", "email")
+                      }
+                      showTick={copyStates.email}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <EditableContactInfo
+                      icon={Globe}
+                      value={profile.website || ""}
+                      isEditing={isEditing}
+                      onChange={
+                        isEditing
+                          ? (value) => handleProfileFieldChange("website", value)
+                          : undefined
+                      }
+                      placeholder="yourwebsite.com"
+                      isClickable={!isEditing}
+                      onClick={() =>
+                        !isEditing &&
+                        profile.website &&
+                        handleExternalLink(profile.website)
+                      }
+                      onIconClick={() =>
+                        !isEditing &&
+                        profile.website &&
+                        handleCopyWithAnimation(
+                          profile.website,
+                          "Website",
+                          "website",
+                        )
+                      }
+                      showTick={copyStates.website}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <EditableContactInfo
+                      icon={MapPin}
+                      value={profile.location || ""}
+                      isEditing={isEditing}
+                      onChange={
+                        isEditing
+                          ? (value) => handleProfileFieldChange("location", value)
+                          : undefined
+                      }
+                      placeholder="Your location"
+                      onIconClick={() =>
+                        !isEditing &&
+                        profile.location &&
+                        handleCopyWithAnimation(
+                          profile.location,
+                          "Location",
+                          "location",
+                        )
+                      }
+                      showTick={copyStates.location}
+                    />
+                  </div>
                 </div>
 
                 {/* Skills */}
