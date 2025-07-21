@@ -88,7 +88,10 @@ export const clamp = (value: number, min: number, max: number): number => {
  */
 export const isProfileComplete = (profile: Partial<PersonProfile>): boolean => {
   const requiredFields: (keyof PersonProfile)[] = ["name", "jobTitle", "email"];
-  return requiredFields.every((field) => profile[field]?.trim());
+  return requiredFields.every((field) => {
+    const value = profile[field];
+    return typeof value === 'string' && value.trim() !== '';
+  });
 };
 
 /**
