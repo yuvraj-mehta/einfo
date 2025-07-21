@@ -18,7 +18,11 @@ export const createInitials = (name: string): string => {
 export const handleExternalLink = (url: string, useMailto = false): void => {
   if (!url?.trim()) return;
 
-  const finalUrl = useMailto ? `mailto:${url}` : `https://${url}`;
+  // Check if URL already has a protocol
+  const hasProtocol = url.startsWith('http://') || url.startsWith('https://');
+  const finalUrl = useMailto 
+    ? `mailto:${url}` 
+    : (hasProtocol ? url : `https://${url}`);
   const target = useMailto ? "_self" : "_blank";
   const windowFeatures = useMailto ? "" : "noopener,noreferrer";
 
