@@ -342,7 +342,7 @@ const PublicProfile = () => {
             </Button>
           </Link>
         ) : !isAuthenticated ? (
-          <Link to="/auth">
+          <Link to="/auth" className="hidden md:inline-flex">
             <Button
               size="sm"
               className="bg-gray-700 hover:bg-gray-800 text-white"
@@ -351,7 +351,7 @@ const PublicProfile = () => {
             </Button>
           </Link>
         ) : (
-          <Link to="/dashboard">
+          <Link to="/dashboard" className="hidden md:inline-flex">
             <Button
               variant="outline"
               size="sm"

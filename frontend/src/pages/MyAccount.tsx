@@ -474,7 +474,7 @@ const MyAccount = () => {
           onClick={() => (window.location.href = "/")}
           variant="outline"
           size="sm"
-          className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-medium"
+          className="hidden md:inline-flex bg-white border-gray-200 text-gray-700 hover:bg-gray-50 font-medium"
         >
           <Home className="w-4 h-4 mr-2" />
           Home
