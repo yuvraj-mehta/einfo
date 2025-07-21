@@ -23,15 +23,15 @@ export interface ProjectLink {
 
 // Default profile
 export const defaultProfile: PersonProfile = {
-  name: "Pranav",
-  jobTitle: "Developer & Consultant",
+  name: "Pranav Kr.",
+  jobTitle: "Aspiring Software Consultant",
   bio: "Creating digital experiences that matter. Clean, functional, human-centered design.",
-  email: "alex@example.com",
-  website: "alexjohnson.design",
-  location: "San Francisco",
-  profileImage: "/placeholder.svg",
-  resumeUrl: "https://drive.google.com/file/d/example/view",
-  skills: ["UI Design", "Prototyping", "User Research", "Figma", "React"],
+  email: "you@mail.in",
+  website: "e-info.me",
+  location: "India",
+  profileImage: "/img.png",
+  resumeUrl: "https://cdn.uconnectlabs.com/wp-content/uploads/sites/123/2021/08/sampe-resumes-capd.pdf",
+  skills: ["UI Design", "Prototyping", "User Research", "Figma", "React", "Analytical Thinking", "Communication"],
 };
 
 // Icon components

@@ -35,14 +35,14 @@ export const UI_CONFIG = {
 
 // Default profile data
 export const DEFAULT_PROFILE = {
-  name: "Pranav",
-  jobTitle: "Developer & Consultant",
+  name: "Your Name",
+  jobTitle: "Job Title",
   bio: "Creating digital experiences that matter. Clean, functional, human-centered design.",
   email: "",
-  website: "alexjohnson.design",
-  location: "San Francisco",
+  website: "e-info.me",
+  location: "India",
   profileImage: "/placeholder.svg",
-  resumeUrl: "https://drive.google.com/file/d/example/view",
+  resumeUrl: "https://cdn.uconnectlabs.com/wp-content/uploads/sites/123/2021/08/sampe-resumes-capd.pdf",
   skills: ["UI Design", "Prototyping", "User Research", "Figma", "React"],
 } as const;
 
