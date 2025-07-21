@@ -288,7 +288,9 @@ const Dashboard: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
+      {/* Added padding bottom for mobile view to prevent content overlap with footer */}
+      <div className="pb-16 md:pb-0"></div>
+      <Footer position="relative" />
     </BaseLayout>
   );
 };
