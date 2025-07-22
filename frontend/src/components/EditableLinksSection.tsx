@@ -303,6 +303,9 @@ export default function EditableLinksSection({
   };
 
   const handleSave = () => {
+    // Show immediate feedback
+    toast.success("Update Queued");
+    
     onProjectsUpdate(editingProjects);
     setIsEditing(false);
   };

@@ -547,6 +547,9 @@ export default function EditableExperienceSection({
   };
 
   const handleSave = () => {
+    // Show immediate feedback
+    toast.success("Update Queued");
+    
     onExperiencesUpdate(editingExperiences);
     setIsEditing(false);
   };

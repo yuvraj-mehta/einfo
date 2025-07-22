@@ -52,9 +52,13 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      // Clear any previous errors
+      // Clear any previous errors and set loading state
       clearError();
       setGoogleError(null);
+      
+      // Get the setLoading function from auth store
+      const { setLoading } = useAuthStore.getState();
+      setLoading(true);
 
       if (!isGoogleReady) {
         throw new Error("Google OAuth is not ready");
@@ -86,6 +90,10 @@ const Auth = () => {
     } catch (error) {
       console.error("Google sign in failed:", error);
       setGoogleError(error.message || "Google sign in failed");
+      
+      // Reset loading state on error
+      const { setLoading } = useAuthStore.getState();
+      setLoading(false);
     }
   };
 

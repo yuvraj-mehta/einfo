@@ -791,6 +791,9 @@ export default function EditableEducationSection({
   };
 
   const handleSave = () => {
+    // Show immediate feedback
+    toast.success("Update Queued");
+    
     onEducationUpdate(editingEducation);
     setIsEditing(false);
   };
