@@ -19,6 +19,8 @@ import {
   Calendar,
   MapPin,
   Eye,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import WorkExperience, {
   WorkExperienceData,
@@ -42,6 +44,10 @@ interface EditableExperienceItemProps {
   onDragEnd: () => void;
   isDragging: boolean;
   dragOverIndex: number | null;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 }
 
 const EditableExperienceItem = ({
@@ -55,6 +61,10 @@ const EditableExperienceItem = ({
   onDragEnd,
   isDragging,
   dragOverIndex,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
 }: EditableExperienceItemProps) => {
   const [editingExperience, setEditingExperience] =
     useState<WorkExperienceData>(experience);
@@ -145,16 +155,46 @@ const EditableExperienceItem = ({
         className={`bg-white border border-gray-100 rounded-xl transition-all duration-200 overflow-hidden shadow-sm ${
           isBeingDragged ? "opacity-50 scale-95" : ""
         } ${isDraggedOver ? "border-gray-300 shadow-lg" : ""}`}
-        draggable
-        onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="p-4 space-y-4">
-          {/* Drag Handle */}
-          <div className="flex items-center gap-2 text-gray-500 -mt-1 mb-2">
-            <GripVertical className="w-4 h-4 cursor-grab active:cursor-grabbing" />
-            <span className="text-xs font-medium">Drag to reorder</span>
+          {/* Drag Handle and Move Buttons */}
+          <div className="flex items-center justify-between -mt-1 mb-2">
+            <div 
+              className="flex items-center gap-2 text-gray-500 cursor-grab active:cursor-grabbing select-none"
+              draggable
+              onDragStart={handleDragStart}
+            >
+              <GripVertical className="w-4 h-4" />
+              <span className="text-xs font-medium">Drag to reorder</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={onMoveUp}
+                disabled={!canMoveUp}
+                className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
+                  canMoveUp 
+                    ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' 
+                    : 'text-gray-300 cursor-not-allowed'
+                }`}
+                title="Move up"
+              >
+                <ChevronUp className="w-3 h-3" />
+              </button>
+              <button
+                onClick={onMoveDown}
+                disabled={!canMoveDown}
+                className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
+                  canMoveDown 
+                    ? 'text-gray-600 hover:text-gray-800 hover:bg-gray-100' 
+                    : 'text-gray-300 cursor-not-allowed'
+                }`}
+                title="Move down"
+              >
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
           </div>
 
           {/* Basic Info */}
@@ -527,6 +567,26 @@ export default function EditableExperienceSection({
     setDragOverIndex(null);
   };
 
+  const handleMoveUp = (index: number) => {
+    if (index > 0) {
+      const newExperiences = [...editingExperiences];
+      const item = newExperiences[index];
+      newExperiences[index] = newExperiences[index - 1];
+      newExperiences[index - 1] = item;
+      setEditingExperiences(newExperiences);
+    }
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (index < editingExperiences.length - 1) {
+      const newExperiences = [...editingExperiences];
+      const item = newExperiences[index];
+      newExperiences[index] = newExperiences[index + 1];
+      newExperiences[index + 1] = item;
+      setEditingExperiences(newExperiences);
+    }
+  };
+
   const handleExperienceExpand = (experienceId: string) => {
     if (expandedExperience === experienceId) {
       setExpandedExperience(null);
@@ -638,6 +698,10 @@ export default function EditableExperienceSection({
                 onDragEnd={handleDragEnd}
                 isDragging={draggedIndex === index}
                 dragOverIndex={dragOverIndex}
+                onMoveUp={() => handleMoveUp(index)}
+                onMoveDown={() => handleMoveDown(index)}
+                canMoveUp={index > 0}
+                canMoveDown={index < currentExperiences.length - 1}
               />
             ))}
 
