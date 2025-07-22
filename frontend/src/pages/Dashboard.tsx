@@ -263,7 +263,7 @@ const Dashboard: React.FC = () => {
 
             <button
               onClick={() => navigate(ROUTES.EDIT_PROFILE)}
-              className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 font-medium rounded-lg transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
               aria-describedby="edit-card-description"
             >
               <Edit3 className="w-4 h-4" />
