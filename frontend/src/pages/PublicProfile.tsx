@@ -7,6 +7,8 @@ import Logo from "@/components/Logo";
 import PortfolioSection from "@/components/PortfolioSection";
 import UnifiedProfileSection from "@/components/UnifiedProfileSection";
 import WorkExperienceSection from "@/components/WorkExperienceSection";
+import ProfileSEO from "@/components/SEO/ProfileSEO";
+import { trackPageView, trackProfileView, trackShareEvent, trackLinkClick } from "@/utils/analytics";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -66,7 +68,11 @@ const PublicProfile = () => {
     }
 
     loadProfile();
-    // Analytics tracking removed
+    
+    // Non-visible SEO analytics tracking
+    if (cleanUsername) {
+      trackPageView(window.location.pathname, `${cleanUsername} Profile | E-Info.me`);
+    }
   }, [cleanUsername, hasAtSymbol, showRedirectMessage]);
 
   useEffect(() => {
@@ -108,6 +114,11 @@ const PublicProfile = () => {
         };
         
         setProfile(transformedData);
+        
+        // Non-visible SEO analytics tracking  
+        if (cleanUsername) {
+          trackProfileView(cleanUsername, transformedData);
+        }
       } else {
         setError("Profile not found");
       }
@@ -129,6 +140,8 @@ const PublicProfile = () => {
           text: `Check out ${profile?.user.name}'s profile on E-Info.me`,
           url,
         });
+        // Non-visible SEO tracking
+        trackShareEvent('native_share', url);
       } catch (error) {
         // User cancelled or error occurred
         copyToClipboard(url);
@@ -142,6 +155,8 @@ const PublicProfile = () => {
     try {
       await navigator.clipboard.writeText(text);
       toast.success("Profile link copied to clipboard!");
+      // Non-visible SEO tracking
+      trackShareEvent('clipboard_copy', text);
     } catch (error) {
       toast.error("Failed to copy link");
     }
@@ -158,6 +173,9 @@ const PublicProfile = () => {
         // Continue even if tracking fails
       }
     })();
+
+    // Non-visible SEO analytics tracking
+    trackLinkClick(href, title);
 
     // Open link immediately
     window.open(href, "_blank", "noopener,noreferrer");
@@ -314,7 +332,13 @@ const PublicProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 relative">
+    <>
+      {/* Non-visible SEO optimization */}
+      {profile && cleanUsername && (
+        <ProfileSEO profile={profile} username={cleanUsername} />
+      )}
+      
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6 relative">
       {/* Logo - Top Left */}
       <div className="absolute top-4 left-4 z-50">
         <Logo />
@@ -477,6 +501,7 @@ const PublicProfile = () => {
         <Footer position="relative" />
       </div>
     </div>
+    </>
   );
 };
 

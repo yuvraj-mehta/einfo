@@ -12,3 +12,16 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Important pages for search engines
+Allow: /@*
+Allow: /demo
+
+# Block admin/private areas  
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth/
+
+# Sitemap
+Sitemap: https://e-info.me/sitemap.xml
