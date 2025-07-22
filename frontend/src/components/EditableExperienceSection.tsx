@@ -131,6 +131,30 @@ const EditableExperienceItem = ({
     onUpdate(updated);
   };
 
+  const handleMoveAchievementUp = (achievementIndex: number) => {
+    if (achievementIndex > 0) {
+      const updatedAchievements = [...editingExperience.achievements];
+      const item = updatedAchievements[achievementIndex];
+      updatedAchievements[achievementIndex] = updatedAchievements[achievementIndex - 1];
+      updatedAchievements[achievementIndex - 1] = item;
+      const updated = { ...editingExperience, achievements: updatedAchievements };
+      setEditingExperience(updated);
+      onUpdate(updated);
+    }
+  };
+
+  const handleMoveAchievementDown = (achievementIndex: number) => {
+    if (achievementIndex < editingExperience.achievements.length - 1) {
+      const updatedAchievements = [...editingExperience.achievements];
+      const item = updatedAchievements[achievementIndex];
+      updatedAchievements[achievementIndex] = updatedAchievements[achievementIndex + 1];
+      updatedAchievements[achievementIndex + 1] = item;
+      const updated = { ...editingExperience, achievements: updatedAchievements };
+      setEditingExperience(updated);
+      onUpdate(updated);
+    }
+  };
+
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = "move";
     onDragStart(index);
@@ -402,6 +426,32 @@ const EditableExperienceItem = ({
                         className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
                         maxLength={150}
                       />
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleMoveAchievementUp(achievementIndex)}
+                          disabled={achievementIndex === 0}
+                          className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                            achievementIndex === 0
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                          }`}
+                          title="Move up"
+                        >
+                          <ChevronUp className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveAchievementDown(achievementIndex)}
+                          disabled={achievementIndex === editingExperience.achievements.length - 1}
+                          className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                            achievementIndex === editingExperience.achievements.length - 1
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                          }`}
+                          title="Move down"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
                       <Button
                         onClick={() => handleRemoveAchievement(achievementIndex)}
                         variant="ghost"
@@ -411,7 +461,7 @@ const EditableExperienceItem = ({
                         <X className="w-3 h-3" />
                       </Button>
                     </div>
-                    <div className="text-right pr-10">
+                    <div className="text-right pr-16">{/* Added more right padding to account for the new buttons */}
                       <p className={`text-xs ${
                         achievement.length > 135 
                           ? achievement.length >= 150 

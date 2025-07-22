@@ -456,10 +456,10 @@ const PublicProfile = () => {
               {profile.visibilitySettings.showTitles && (
                 <div className="text-center">
                   <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                    Education
+                    Education & Certifications
                   </h2>
                   <p className="text-gray-600 text-sm">
-                    Academic background and qualifications
+                    My educational journey and professional certifications
                   </p>
                 </div>
               )}

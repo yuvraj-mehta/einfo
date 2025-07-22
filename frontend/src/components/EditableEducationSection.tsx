@@ -144,6 +144,30 @@ const EditableEducationItem = ({
     onUpdate(updated);
   };
 
+  const handleMoveAchievementUp = (achievementIndex: number) => {
+    if (achievementIndex > 0) {
+      const updatedAchievements = [...editingEducation.achievements];
+      const item = updatedAchievements[achievementIndex];
+      updatedAchievements[achievementIndex] = updatedAchievements[achievementIndex - 1];
+      updatedAchievements[achievementIndex - 1] = item;
+      const updated = { ...editingEducation, achievements: updatedAchievements };
+      setEditingEducation(updated);
+      onUpdate(updated);
+    }
+  };
+
+  const handleMoveAchievementDown = (achievementIndex: number) => {
+    if (achievementIndex < editingEducation.achievements.length - 1) {
+      const updatedAchievements = [...editingEducation.achievements];
+      const item = updatedAchievements[achievementIndex];
+      updatedAchievements[achievementIndex] = updatedAchievements[achievementIndex + 1];
+      updatedAchievements[achievementIndex + 1] = item;
+      const updated = { ...editingEducation, achievements: updatedAchievements };
+      setEditingEducation(updated);
+      onUpdate(updated);
+    }
+  };
+
   const handleCourseChange = (courseIndex: number, value: string) => {
     // Apply character limit for courses
     if (value.length > 50) {
@@ -178,6 +202,30 @@ const EditableEducationItem = ({
     const updated = { ...editingEducation, courses: updatedCourses };
     setEditingEducation(updated);
     onUpdate(updated);
+  };
+
+  const handleMoveCourseUp = (courseIndex: number) => {
+    if (courseIndex > 0) {
+      const updatedCourses = [...editingEducation.courses];
+      const item = updatedCourses[courseIndex];
+      updatedCourses[courseIndex] = updatedCourses[courseIndex - 1];
+      updatedCourses[courseIndex - 1] = item;
+      const updated = { ...editingEducation, courses: updatedCourses };
+      setEditingEducation(updated);
+      onUpdate(updated);
+    }
+  };
+
+  const handleMoveCourseDown = (courseIndex: number) => {
+    if (courseIndex < editingEducation.courses.length - 1) {
+      const updatedCourses = [...editingEducation.courses];
+      const item = updatedCourses[courseIndex];
+      updatedCourses[courseIndex] = updatedCourses[courseIndex + 1];
+      updatedCourses[courseIndex + 1] = item;
+      const updated = { ...editingEducation, courses: updatedCourses };
+      setEditingEducation(updated);
+      onUpdate(updated);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -512,40 +560,66 @@ const EditableEducationItem = ({
             <div className="space-y-2">
               {editingEducation.courses.map((course, courseIndex) => (
                 <div key={courseIndex} className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={course}
-                      onChange={(e) =>
-                        handleCourseChange(courseIndex, e.target.value)
-                      }
-                      placeholder="Course name"
-                      className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
-                      maxLength={50}
-                    />
-                    <Button
-                      onClick={() => handleRemoveCourse(courseIndex)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  <div className="text-right pr-10">
-                    <p className={`text-xs ${
-                      course.length > 45 
-                        ? course.length >= 50 
-                          ? 'text-red-500' 
-                          : 'text-orange-500'
-                        : 'text-gray-500'
-                    }`}>
-                      {course.length}/50 characters
-                    </p>
-                    {course.length >= 50 && (
-                      <p className="text-xs text-red-500 mt-1">
-                        Character limit reached
-                      </p>
-                    )}
+                  <div className="flex items-start gap-2">
+                    <div className="flex-1 space-y-1">
+                      <Input
+                        value={course}
+                        onChange={(e) =>
+                          handleCourseChange(courseIndex, e.target.value)
+                        }
+                        placeholder="Course name"
+                        className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8"
+                        maxLength={50}
+                      />
+                      <div className="text-right">
+                        <span className={`text-xs ${
+                          course.length > 45 
+                            ? course.length >= 50 
+                              ? 'text-red-500' 
+                              : 'text-orange-500'
+                            : 'text-gray-500'
+                        }`}>
+                          {course.length}/50
+                        </span>
+                        {course.length >= 50 && (
+                          <span className="text-xs text-red-500 ml-1">• Limit reached</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <button
+                        onClick={() => handleMoveCourseUp(courseIndex)}
+                        disabled={courseIndex === 0}
+                        className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                          courseIndex === 0
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                        }`}
+                        title="Move up"
+                      >
+                        <ChevronUp className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => handleMoveCourseDown(courseIndex)}
+                        disabled={courseIndex === editingEducation.courses.length - 1}
+                        className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                          courseIndex === editingEducation.courses.length - 1
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                        }`}
+                        title="Move down"
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                      <Button
+                        onClick={() => handleRemoveCourse(courseIndex)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 h-5 w-5 p-0"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -581,43 +655,69 @@ const EditableEducationItem = ({
                     key={achievementIndex}
                     className="space-y-1"
                   >
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={achievement}
-                        onChange={(e) =>
-                          handleAchievementChange(
-                            achievementIndex,
-                            e.target.value,
-                          )
-                        }
-                        placeholder="Achievement description"
-                        className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8 flex-1"
-                        maxLength={180}
-                      />
-                      <Button
-                        onClick={() => handleRemoveAchievement(achievementIndex)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500 hover:text-red-700 h-8 w-8 p-1"
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                    <div className="text-right pr-10">
-                      <p className={`text-xs ${
-                        achievement.length > 162 
-                          ? achievement.length >= 180 
-                            ? 'text-red-500' 
-                            : 'text-orange-500'
-                          : 'text-gray-500'
-                      }`}>
-                        {achievement.length}/180 characters
-                      </p>
-                      {achievement.length >= 180 && (
-                        <p className="text-xs text-red-500 mt-1">
-                          Character limit reached
-                        </p>
-                      )}
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 space-y-1">
+                        <Input
+                          value={achievement}
+                          onChange={(e) =>
+                            handleAchievementChange(
+                              achievementIndex,
+                              e.target.value,
+                            )
+                          }
+                          placeholder="Achievement description"
+                          className="text-xs bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400 h-8"
+                          maxLength={180}
+                        />
+                        <div className="text-right">
+                          <span className={`text-xs ${
+                            achievement.length > 162 
+                              ? achievement.length >= 180 
+                                ? 'text-red-500' 
+                                : 'text-orange-500'
+                              : 'text-gray-500'
+                          }`}>
+                            {achievement.length}/180
+                          </span>
+                          {achievement.length >= 180 && (
+                            <span className="text-xs text-red-500 ml-1">• Limit reached</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 mt-1">
+                        <button
+                          onClick={() => handleMoveAchievementUp(achievementIndex)}
+                          disabled={achievementIndex === 0}
+                          className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                            achievementIndex === 0
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                          }`}
+                          title="Move up"
+                        >
+                          <ChevronUp className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => handleMoveAchievementDown(achievementIndex)}
+                          disabled={achievementIndex === editingEducation.achievements.length - 1}
+                          className={`w-5 h-5 flex items-center justify-center rounded transition-colors ${
+                            achievementIndex === editingEducation.achievements.length - 1
+                              ? 'text-gray-300 cursor-not-allowed'
+                              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                          }`}
+                          title="Move down"
+                        >
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                        <Button
+                          onClick={() => handleRemoveAchievement(achievementIndex)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 h-5 w-5 p-0"
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ),
