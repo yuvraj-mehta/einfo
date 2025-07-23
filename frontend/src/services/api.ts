@@ -3,6 +3,7 @@ import { PortfolioProject } from "@/lib/portfolioData";
 import { PersonProfile } from "@/lib/profileData";
 import { ProjectLink } from "@/lib/profileData";
 import { WorkExperienceData } from "@/lib/workExperienceData";
+import { AchievementData, ExtracurricularData } from "@/types/newSections";
 
 // API Service for communicating with backend
 
@@ -35,6 +36,8 @@ interface VisibilitySettings {
   showExperience: boolean;
   showPortfolio: boolean;
   showEducation: boolean;
+  showAchievements: boolean;
+  showExtracurriculars: boolean;
   showTitles: boolean;
 }
 
@@ -45,6 +48,8 @@ interface FullProfileData {
   experiences: WorkExperienceData[];
   portfolio: PortfolioProject[];
   education: EducationData[];
+  achievements: AchievementData[];
+  extracurriculars: ExtracurricularData[];
 }
 
 // API Client class
@@ -373,6 +378,70 @@ class ApiClient {
     return this.makeRequest("/auth/verify-email", {
       method: "POST",
       body: JSON.stringify({ token }),
+    });
+  }
+
+  // Achievements endpoints
+  async getAchievements(): Promise<ApiResponse<{ achievements: AchievementData[] }>> {
+    return this.makeRequest("/achievements");
+  }
+
+  async createAchievement(achievement: Partial<AchievementData>): Promise<ApiResponse<{ achievement: AchievementData }>> {
+    return this.makeRequest("/achievements", {
+      method: "POST",
+      body: JSON.stringify(achievement),
+    });
+  }
+
+  async updateAchievement(id: string, achievement: Partial<AchievementData>): Promise<ApiResponse<{ achievement: AchievementData }>> {
+    return this.makeRequest(`/achievements/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(achievement),
+    });
+  }
+
+  async deleteAchievement(id: string): Promise<ApiResponse> {
+    return this.makeRequest(`/achievements/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async updateAchievements(achievements: AchievementData[]): Promise<ApiResponse<{ achievements: AchievementData[] }>> {
+    return this.makeRequest("/achievements/batch", {
+      method: "POST",
+      body: JSON.stringify({ achievements }),
+    });
+  }
+
+  // Extracurriculars endpoints
+  async getExtracurriculars(): Promise<ApiResponse<{ extracurriculars: ExtracurricularData[] }>> {
+    return this.makeRequest("/extracurriculars");
+  }
+
+  async createExtracurricular(extracurricular: Partial<ExtracurricularData>): Promise<ApiResponse<{ extracurricular: ExtracurricularData }>> {
+    return this.makeRequest("/extracurriculars", {
+      method: "POST",
+      body: JSON.stringify(extracurricular),
+    });
+  }
+
+  async updateExtracurricular(id: string, extracurricular: Partial<ExtracurricularData>): Promise<ApiResponse<{ extracurricular: ExtracurricularData }>> {
+    return this.makeRequest(`/extracurriculars/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(extracurricular),
+    });
+  }
+
+  async deleteExtracurricular(id: string): Promise<ApiResponse> {
+    return this.makeRequest(`/extracurriculars/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  async updateExtracurriculars(extracurriculars: ExtracurricularData[]): Promise<ApiResponse<{ extracurriculars: ExtracurricularData[] }>> {
+    return this.makeRequest("/extracurriculars/batch", {
+      method: "POST",
+      body: JSON.stringify({ extracurriculars }),
     });
   }
 }

@@ -22,6 +22,8 @@ export interface VisibilitySettings {
   showPortfolio: boolean;
   showEducation: boolean;
   showTitles: boolean;
+  showAchievements: boolean;
+  showExtracurriculars: boolean;
 }
 
 interface ProfileState {
@@ -82,6 +84,8 @@ const defaultVisibilitySettings: VisibilitySettings = {
   showPortfolio: true,
   showEducation: true,
   showTitles: true,
+  showAchievements: true,
+  showExtracurriculars: true,
 };
 
 export const useProfileStore = create<ProfileState>()(

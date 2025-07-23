@@ -1,6 +1,8 @@
 import AuthButton from "@/components/AuthButton";
+import EditableAchievementSection from "@/components/EditableAchievementSection";
 import EditableEducationSection from "@/components/EditableEducationSection";
 import EditableExperienceSection from "@/components/EditableExperienceSection";
+import EditableExtracurricularSection from "@/components/EditableExtracurricularSection";
 import EditableLinksSection from "@/components/EditableLinksSection";
 import EditablePortfolioSection from "@/components/EditablePortfolioSection";
 import Footer from "@/components/Footer";
@@ -17,12 +19,15 @@ import type { WorkExperienceData } from "@/components/WorkExperience";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { defaultAchievements } from "@/lib/achievementsData";
+import { defaultExtracurriculars } from "@/lib/extracurricularsData";
 import { getIconFromName } from "@/lib/iconUtils";
 import type { PortfolioProject } from "@/lib/portfolioData";
 import type { PersonProfile, ProjectLink } from "@/lib/profileData";
 import { api } from "@/services/api";
 import { useAuthStore, useProfileStore } from "@/stores";
 import type { VisibilitySettings } from "@/stores/profileStore";
+import type { AchievementData, ExtracurricularData } from "@/types/newSections";
 
 const EditProfile = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
@@ -43,6 +48,10 @@ const EditProfile = () => {
   } = useProfileStore();
   const navigate = useNavigate();
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  
+  // Local state for new sections (hardcoded for now)
+  const [achievements, setAchievements] = useState<AchievementData[]>(defaultAchievements);
+  const [extracurriculars, setExtracurriculars] = useState<ExtracurricularData[]>(defaultExtracurriculars);
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -99,11 +108,41 @@ const EditProfile = () => {
         updatePortfolioProjects(transformedPortfolio);
         updateEducation(transformedEducation);
       }
+
+      // Load achievements and extracurriculars separately
+      await Promise.all([
+        loadAchievements(),
+        loadExtracurriculars()
+      ]);
     } catch (error) {
       console.error('Failed to load profile data:', error);
       toast.error('Failed to load profile data');
     } finally {
       setIsLoadingProfile(false);
+    }
+  };
+
+  const loadAchievements = async () => {
+    try {
+      const response = await api.getAchievements();
+      if (response.success && response.data) {
+        setAchievements(response.data.achievements || []);
+      }
+    } catch (error) {
+      console.error('Failed to load achievements:', error);
+      // Keep default achievements on error
+    }
+  };
+
+  const loadExtracurriculars = async () => {
+    try {
+      const response = await api.getExtracurriculars();
+      if (response.success && response.data) {
+        setExtracurriculars(response.data.extracurriculars || []);
+      }
+    } catch (error) {
+      console.error('Failed to load extracurriculars:', error);
+      // Keep default extracurriculars on error
     }
   };
 
@@ -220,6 +259,37 @@ const EditProfile = () => {
     } catch (error) {
       console.error('Failed to update education:', error);
       toast.error('Failed to update education');
+    }
+  };
+
+  // API-integrated handlers for new sections
+  const handleAchievementsUpdate = async (newAchievements: AchievementData[]) => {
+    try {
+      const response = await api.updateAchievements(newAchievements);
+      if (response.success) {
+        setAchievements(newAchievements);
+        toast.success('Achievements updated successfully');
+      } else {
+        toast.error('Failed to update achievements');
+      }
+    } catch (error) {
+      console.error('Failed to update achievements:', error);
+      toast.error('Failed to update achievements');
+    }
+  };
+
+  const handleExtracurricularsUpdate = async (newExtracurriculars: ExtracurricularData[]) => {
+    try {
+      const response = await api.updateExtracurriculars(newExtracurriculars);
+      if (response.success) {
+        setExtracurriculars(newExtracurriculars);
+        toast.success('Extracurriculars updated successfully');
+      } else {
+        toast.error('Failed to update extracurriculars');
+      }
+    } catch (error) {
+      console.error('Failed to update extracurriculars:', error);
+      toast.error('Failed to update extracurriculars');
     }
   };
 
@@ -406,6 +476,48 @@ const EditProfile = () => {
                   }
                 />
               </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Label
+                    htmlFor="show-achievements"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Achievements
+                  </Label>
+                </div>
+                <Switch
+                  id="show-achievements"
+                  checked={visibilitySettings.showAchievements}
+                  onCheckedChange={(checked) =>
+                    handleVisibilityUpdate({
+                      ...visibilitySettings,
+                      showAchievements: checked,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Label
+                    htmlFor="show-extracurriculars"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Extracurriculars
+                  </Label>
+                </div>
+                <Switch
+                  id="show-extracurriculars"
+                  checked={visibilitySettings.showExtracurriculars}
+                  onCheckedChange={(checked) =>
+                    handleVisibilityUpdate({
+                      ...visibilitySettings,
+                      showExtracurriculars: checked,
+                    })
+                  }
+                />
+              </div>
             </div>
 
             {/* Title Visibility Control */}
@@ -467,6 +579,22 @@ const EditProfile = () => {
           <EditableEducationSection
             education={education}
             onEducationUpdate={handleEducationUpdate}
+          />
+        </div>
+
+        {/* Editable Achievements Section */}
+        <div className="mb-20">
+          <EditableAchievementSection
+            achievements={achievements}
+            onAchievementsUpdate={handleAchievementsUpdate}
+          />
+        </div>
+
+        {/* Editable Extracurricular Section */}
+        <div className="mb-20">
+          <EditableExtracurricularSection
+            extracurriculars={extracurriculars}
+            onExtracurricularsUpdate={handleExtracurricularsUpdate}
           />
         </div>
 

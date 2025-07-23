@@ -4,6 +4,8 @@ export const PROFILE_LIMITS = {
   EXPERIENCE: 10,
   PORTFOLIO: 10,
   EDUCATION: 10,
+  ACHIEVEMENTS: 8,
+  EXTRACURRICULARS: 8,
 } as const;
 
 // Helper function to check if a section has reached its limit

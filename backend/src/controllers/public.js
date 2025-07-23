@@ -40,6 +40,14 @@ class PublicController {
             where: { isActive: true },
             orderBy: { displayOrder: "asc" },
           },
+          achievements: {
+            where: { isActive: true },
+            orderBy: { displayOrder: "asc" },
+          },
+          extracurriculars: {
+            where: { isActive: true },
+            orderBy: { displayOrder: "asc" },
+          },
           _count: {
             select: {
               receivedStars: true,
@@ -74,6 +82,8 @@ class PublicController {
       const showExperience = user.profile?.showExperience ?? true;
       const showPortfolio = user.profile?.showPortfolio ?? true;
       const showEducation = user.profile?.showEducation ?? true;
+      const showAchievements = user.profile?.showAchievements ?? true;
+      const showExtracurriculars = user.profile?.showExtracurriculars ?? true;
       const showTitles = user.profile?.showTitles ?? true;
 
       // Transform data to match frontend expectations
@@ -101,6 +111,8 @@ class PublicController {
           showExperience,
           showPortfolio,
           showEducation,
+          showAchievements,
+          showExtracurriculars,
           showTitles,
         },
         links: showLinks ? user.links.map(link => ({
@@ -164,6 +176,42 @@ class PublicController {
           imageUrl: edu.imageUrl || "",
           websiteUrl: edu.websiteUrl || "",
           order: edu.displayOrder,
+        })) : [],
+        achievements: showAchievements ? user.achievements.map(ach => ({
+          id: ach.id,
+          title: ach.title,
+          organization: ach.organization,
+          duration: ach.duration,
+          startDate: ach.startDate?.toISOString() || null,
+          endDate: ach.endDate?.toISOString() || null,
+          location: ach.location || "",
+          description: ach.description || "",
+          type: ach.type,
+          skillsInvolved: ach.skillsInvolved || [],
+          keyPoints: ach.keyPoints || [],
+          iconName: ach.iconName || "Trophy",
+          imageUrl: ach.imageUrl || "",
+          websiteUrl: ach.websiteUrl || "",
+          order: ach.displayOrder,
+        })) : [],
+        extracurriculars: showExtracurriculars ? user.extracurriculars.map(ext => ({
+          id: ext.id,
+          activityName: ext.activityName,
+          organization: ext.organization,
+          duration: ext.duration,
+          startDate: ext.startDate?.toISOString() || null,
+          endDate: ext.endDate?.toISOString() || null,
+          location: ext.location || "",
+          role: ext.role || "",
+          description: ext.description || "",
+          type: ext.type,
+          responsibilities: ext.responsibilities || [],
+          achievements: ext.achievements || [],
+          skillsDeveloped: ext.skillsDeveloped || [],
+          iconName: ext.iconName || "Users",
+          imageUrl: ext.imageUrl || "",
+          websiteUrl: ext.websiteUrl || "",
+          order: ext.displayOrder,
         })) : [],
         stats: {
           stars: user._count.receivedStars,

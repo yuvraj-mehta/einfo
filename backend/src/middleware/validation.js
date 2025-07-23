@@ -355,10 +355,204 @@ const validateVisibilitySettings = [
     .optional()
     .isBoolean()
     .withMessage("showEducation must be a boolean"),
+  body("showAchievements")
+    .optional()
+    .isBoolean()
+    .withMessage("showAchievements must be a boolean"),
+  body("showExtracurriculars")
+    .optional()
+    .isBoolean()
+    .withMessage("showExtracurriculars must be a boolean"),
   body("showTitles")
     .optional()
     .isBoolean()
     .withMessage("showTitles must be a boolean"),
+  handleValidationErrors,
+];
+
+/**
+ * Achievement validation
+ */
+const validateAchievement = [
+  body("title")
+    .isLength({ min: 1, max: 120 })
+    .withMessage("Title must be between 1 and 120 characters")
+    .trim(),
+  body("organization")
+    .isLength({ min: 1, max: 80 })
+    .withMessage("Organization must be between 1 and 80 characters")
+    .trim(),
+  body("duration")
+    .optional()
+    .isLength({ max: 25 })
+    .withMessage("Duration must be less than 25 characters")
+    .trim(),
+  body("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid date"),
+  body("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid date"),
+  body("location")
+    .optional()
+    .isLength({ max: 40 })
+    .withMessage("Location must be less than 40 characters")
+    .trim(),
+  body("description")
+    .optional()
+    .isLength({ max: 300 })
+    .withMessage("Description must be less than 300 characters")
+    .trim(),
+  body("type")
+    .isIn(["competition", "recognition", "contribution"])
+    .withMessage("Type must be one of: competition, recognition, contribution"),
+  body("skillsInvolved")
+    .optional()
+    .isArray()
+    .withMessage("Skills involved must be an array")
+    .custom((skills) => {
+      if (skills.length > 15) {
+        throw new Error("Maximum 15 skills allowed");
+      }
+      for (const skill of skills) {
+        if (typeof skill !== "string" || skill.length > 40) {
+          throw new Error("Each skill must be a string with max 40 characters");
+        }
+      }
+      return true;
+    }),
+  body("keyPoints")
+    .optional()
+    .isArray()
+    .withMessage("Key points must be an array")
+    .custom((keyPoints) => {
+      if (keyPoints.length > 10) {
+        throw new Error("Maximum 10 key points allowed");
+      }
+      for (const point of keyPoints) {
+        if (typeof point !== "string" || point.length > 200) {
+          throw new Error("Each key point must be a string with max 200 characters");
+        }
+      }
+      return true;
+    }),
+  body("iconName")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Icon name must be less than 50 characters"),
+  body("imageUrl")
+    .optional()
+    .isURL()
+    .withMessage("Image URL must be a valid URL"),
+  body("websiteUrl")
+    .optional()
+    .isURL()
+    .withMessage("Website URL must be a valid URL"),
+  handleValidationErrors,
+];
+
+/**
+ * Extracurricular validation
+ */
+const validateExtracurricular = [
+  body("activityName")
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Activity name must be between 1 and 100 characters")
+    .trim(),
+  body("organization")
+    .isLength({ min: 1, max: 80 })
+    .withMessage("Organization must be between 1 and 80 characters")
+    .trim(),
+  body("duration")
+    .optional()
+    .isLength({ max: 25 })
+    .withMessage("Duration must be less than 25 characters")
+    .trim(),
+  body("startDate")
+    .optional()
+    .isISO8601()
+    .withMessage("Start date must be a valid date"),
+  body("endDate")
+    .optional()
+    .isISO8601()
+    .withMessage("End date must be a valid date"),
+  body("location")
+    .optional()
+    .isLength({ max: 40 })
+    .withMessage("Location must be less than 40 characters")
+    .trim(),
+  body("role")
+    .optional()
+    .isLength({ max: 60 })
+    .withMessage("Role must be less than 60 characters")
+    .trim(),
+  body("description")
+    .optional()
+    .isLength({ max: 350 })
+    .withMessage("Description must be less than 350 characters")
+    .trim(),
+  body("type")
+    .isIn(["leadership", "volunteering", "creative", "advocacy", "sports", "academic"])
+    .withMessage("Type must be one of: leadership, volunteering, creative, advocacy, sports, academic"),
+  body("responsibilities")
+    .optional()
+    .isArray()
+    .withMessage("Responsibilities must be an array")
+    .custom((responsibilities) => {
+      if (responsibilities.length > 10) {
+        throw new Error("Maximum 10 responsibilities allowed");
+      }
+      for (const responsibility of responsibilities) {
+        if (typeof responsibility !== "string" || responsibility.length > 150) {
+          throw new Error("Each responsibility must be a string with max 150 characters");
+        }
+      }
+      return true;
+    }),
+  body("achievements")
+    .optional()
+    .isArray()
+    .withMessage("Achievements must be an array")
+    .custom((achievements) => {
+      if (achievements.length > 8) {
+        throw new Error("Maximum 8 achievements allowed");
+      }
+      for (const achievement of achievements) {
+        if (typeof achievement !== "string" || achievement.length > 150) {
+          throw new Error("Each achievement must be a string with max 150 characters");
+        }
+      }
+      return true;
+    }),
+  body("skillsDeveloped")
+    .optional()
+    .isArray()
+    .withMessage("Skills developed must be an array")
+    .custom((skills) => {
+      if (skills.length > 12) {
+        throw new Error("Maximum 12 skills allowed");
+      }
+      for (const skill of skills) {
+        if (typeof skill !== "string" || skill.length > 40) {
+          throw new Error("Each skill must be a string with max 40 characters");
+        }
+      }
+      return true;
+    }),
+  body("iconName")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Icon name must be less than 50 characters"),
+  body("imageUrl")
+    .optional()
+    .isURL()
+    .withMessage("Image URL must be a valid URL"),
+  body("websiteUrl")
+    .optional()
+    .isURL()
+    .withMessage("Website URL must be a valid URL"),
   handleValidationErrors,
 ];
 
@@ -374,4 +568,6 @@ module.exports = {
   validateAccountUpdate,
   validateEmail,
   validateVisibilitySettings,
+  validateAchievement,
+  validateExtracurricular,
 };

@@ -34,6 +34,8 @@ model User {
   portfolio PortfolioProject[]
   experiences WorkExperience[]
   education Education[]
+  achievements Achievement[]
+  extracurriculars Extracurricular[]
   analytics ProfileAnalytic[]
   receivedStars ProfileStar[] @relation("ProfileUser")
   emailVerifications EmailVerification[]
@@ -59,6 +61,8 @@ model UserProfile {
   showExperience Boolean @default(true)
   showPortfolio Boolean @default(true)
   showEducation Boolean @default(true)
+  showAchievements Boolean @default(true)
+  showExtracurriculars Boolean @default(true)
   showTitles Boolean @default(true)
 
   createdAt DateTime @default(now())
@@ -233,4 +237,60 @@ model EmailVerification {
   createdAt DateTime @default(now())
 
   @@map("email_verifications")
+}
+
+model Achievement {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String
+  organization String
+  duration String? // Free-form duration string like "March 2023" or "2022 - Present"
+  startDate DateTime?
+  endDate DateTime?
+  location String?
+  description String?
+  type String // competition, recognition, contribution
+  skillsInvolved String[]
+  keyPoints String[]
+  iconName String?
+  imageUrl String?
+  websiteUrl String?
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("achievements")
+}
+
+model Extracurricular {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  activityName String
+  organization String
+  duration String? // Free-form duration string like "2018 - 2020" or "2020 - Present"
+  startDate DateTime?
+  endDate DateTime?
+  location String?
+  role String?
+  description String?
+  type String // leadership, volunteering, creative, advocacy, sports, academic
+  responsibilities String[]
+  achievements String[]
+  skillsDeveloped String[]
+  iconName String?
+  imageUrl String?
+  websiteUrl String?
+  displayOrder Int @default(0)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("extracurriculars")
 }

@@ -1,23 +1,27 @@
+import AchievementSection from "@/components/AchievementSection";
 import AuthButton from "@/components/AuthButton";
 import EducationSection from "@/components/EducationSection";
+import ExtracurricularSection from "@/components/ExtracurricularSection";
 import Footer from "@/components/Footer";
 import LinkButton from "@/components/LinkButton";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import Logo from "@/components/Logo";
 import PortfolioSection from "@/components/PortfolioSection";
+import ProfileSEO from "@/components/SEO/ProfileSEO";
 import UnifiedProfileSection from "@/components/UnifiedProfileSection";
 import WorkExperienceSection from "@/components/WorkExperienceSection";
-import ProfileSEO from "@/components/SEO/ProfileSEO";
-import { trackPageView, trackProfileView, trackShareEvent, trackLinkClick } from "@/utils/analytics";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { defaultAchievements } from "@/lib/achievementsData";
+import { defaultExtracurriculars } from "@/lib/extracurricularsData";
 import { getIconFromName } from "@/lib/iconUtils";
 import { api } from "@/services/api";
 import { useAuthStore } from "@/stores";
+import { trackLinkClick, trackPageView, trackProfileView, trackShareEvent } from "@/utils/analytics";
 
 import {
   Home,
@@ -111,6 +115,8 @@ const PublicProfile = () => {
             href: link.url || link.href, // Map url to href
             icon: link.iconName ? getIconFromName(link.iconName) : null, // Convert iconName to icon component
           })) : [],
+          achievements: apiData.achievements || [],
+          extracurriculars: apiData.extracurriculars || [],
         };
         
         setProfile(transformedData);
@@ -490,6 +496,40 @@ const PublicProfile = () => {
               <EducationSection education={profile.education} />
             </div>
           )}
+
+        {/* Achievements Section */}
+        {profile.visibilitySettings.showAchievements && profile.achievements && profile.achievements.length > 0 && (
+          <div className="space-y-4 mt-24">
+            {profile.visibilitySettings.showTitles && (
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Achievements
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Notable accomplishments and recognitions
+                </p>
+              </div>
+            )}
+            <AchievementSection achievements={profile.achievements} />
+          </div>
+        )}
+
+        {/* Extracurricular Section */}
+        {profile.visibilitySettings.showExtracurriculars && profile.extracurriculars && profile.extracurriculars.length > 0 && (
+          <div className="space-y-4 mt-24">
+            {profile.visibilitySettings.showTitles && (
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                  Extracurricular Activities
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Community involvement and personal interests
+                </p>
+              </div>
+            )}
+            <ExtracurricularSection extracurriculars={profile.extracurriculars} />
+          </div>
+        )}
 
         {/* Bottom spacing for non-authenticated users */}
         {!isAuthenticated && (
