@@ -131,7 +131,7 @@ class PublicController {
         experiences: showExperience ? user.experiences.map(exp => ({
           id: exp.id,
           company: exp.company,
-          position: showTitles ? exp.position : "Position",
+          position: exp.position,
           duration: exp.duration || "Duration not specified", // Use duration field directly
           startDate: exp.startDate?.toISOString() || null,
           endDate: exp.endDate?.toISOString() || null,
@@ -150,7 +150,7 @@ class PublicController {
         education: showEducation ? user.education.map(edu => ({
           id: edu.id,
           institution: edu.institution,
-          degree: showTitles ? edu.degree : "Degree",
+          degree: edu.degree,
           duration: edu.duration,
           startDate: edu.startDate?.toISOString() || null,
           endDate: edu.endDate?.toISOString() || null,
