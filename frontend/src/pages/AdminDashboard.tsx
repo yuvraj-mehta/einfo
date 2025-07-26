@@ -153,7 +153,7 @@ const AdminDashboard = () => {
     try {
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: "20",
+        limit: "10",
         ...(searchTerm && { search: searchTerm }),
         ...(statusFilter !== "all" && { status: statusFilter })
       });

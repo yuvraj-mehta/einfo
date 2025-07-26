@@ -133,7 +133,7 @@ class AdminController {
     try {
       const adminId = req.admin.adminId;
       const page = parseInt(req.query.page) || 1;
-      const limit = Math.min(parseInt(req.query.limit) || 20, 100); // Max 100 per page
+      const limit = Math.min(parseInt(req.query.limit) || 10, 100); // Max 100 per page, default 10
       const search = req.query.search || '';
       const status = req.query.status; // 'active', 'inactive', or undefined for all
 
@@ -396,7 +396,7 @@ class AdminController {
   async getActivityLogs(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;
-      const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+      const limit = Math.min(parseInt(req.query.limit) || 10, 100);
       const action = req.query.action;
       const adminId = req.query.adminId;
 
