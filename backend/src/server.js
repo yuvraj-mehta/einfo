@@ -23,6 +23,7 @@ const extracurricularRoutes = require("./routes/extracurriculars");
 const uploadRoutes = require("./routes/upload");
 const analyticsRoutes = require("./routes/analytics");
 const publicRoutes = require("./routes/public");
+const adminRoutes = require("./routes/admin");
 
 // Import middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -143,6 +144,7 @@ app.use("/api/extracurriculars", extracurricularRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/admin", adminRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

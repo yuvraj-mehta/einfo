@@ -20,6 +20,11 @@ const PublicProfile = React.lazy(() => import("./pages/PublicProfile"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const LoaderShowcase = React.lazy(() => import("./pages/LoaderShowcase"));
 
+// Admin pages
+const AdminLogin = React.lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
+const AdminUserProfile = React.lazy(() => import("./pages/AdminUserProfile"));
+
 // Configure React Query with optimized defaults
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +74,12 @@ const App = () => {
                 <Route path="/account" element={<MyAccount />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/loaders" element={<LoaderShowcase />} />
+                
+                {/* Admin routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users/:userId" element={<AdminUserProfile />} />
+                
                 <Route path="/:username" element={<PublicProfile />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

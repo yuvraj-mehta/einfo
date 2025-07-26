@@ -294,3 +294,54 @@ model Extracurricular {
 
   @@map("extracurriculars")
 }
+
+model Admin {
+  id String @id @default(cuid())
+  email String @unique
+  username String @unique
+  name String
+  password String // Hashed password for admin login
+  role String @default("admin") // "super_admin" or "admin"
+  isActive Boolean @default(true)
+  lastLogin DateTime?
+  createdByAdminId String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdAdmins Admin[] @relation("AdminHierarchy")
+  createdBy Admin? @relation("AdminHierarchy", fields: [createdByAdminId], references: [id])
+  activityLogs AdminActivityLog[]
+
+  @@map("admins")
+}
+
+model AdminActivityLog {
+  id String @id @default(cuid())
+  adminId String
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action String // "view_users", "create_admin", "deactivate_user", "login", "logout", etc.
+  targetUserId String? // For actions on regular users
+  targetAdminId String? // For actions on other admins
+  details String? // JSON string for additional details
+  ipAddress String?
+  userAgent String?
+  
+  createdAt DateTime @default(now())
+
+  @@map("admin_activity_logs")
+}
+
+model SystemStats {
+  id String @id @default(cuid())
+  totalUsers Int @default(0)
+  activeUsers Int @default(0)
+  totalProfiles Int @default(0)
+  totalViews Int @default(0)
+  totalClicks Int @default(0)
+  
+  lastUpdated DateTime @default(now())
+
+  @@map("system_stats")
+}

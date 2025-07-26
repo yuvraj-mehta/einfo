@@ -47,6 +47,9 @@ duration-implementation-complete.js
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
+.env.staging
 
 # Node modules (just in case)
 node_modules/
@@ -54,3 +57,25 @@ node_modules/
 # Build outputs
 dist/
 build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Security/credential files
+*.key
+*.pem
+*.p12
+*.jks
+config/secrets.js
+config/credentials.json
+secrets.json
+
+# Log files
+logs/
+*.log
+
+# OS generated files
+Thumbs.db
+ehthumbs.db

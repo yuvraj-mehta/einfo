@@ -129,3 +129,16 @@ clear-stars.js
 # Lock files
 package-lock.json
 yarn.lock
+
+# Additional security patterns
+*.secret
+secrets/
+config/production.js
+config/keys.js
+uploads/
+temp/
+*.backup
+
+# Database backups
+*.sql
+*.dump
