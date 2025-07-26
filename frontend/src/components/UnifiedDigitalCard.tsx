@@ -348,7 +348,7 @@ const EditableContactInfo = ({
             ? "cursor-pointer hover:text-gray-800 transition-colors"
             : ""
         } ${
-          value.length > 30 
+          value.length > 20 
             ? "overflow-hidden text-ellipsis whitespace-nowrap" 
             : "break-words"
         }`}
@@ -356,9 +356,9 @@ const EditableContactInfo = ({
           e.stopPropagation();
           onClick?.();
         }}
-        title={value.length > 30 ? value : undefined} // Only show tooltip for very long text
+        title={value.length > 20 ? value : undefined} // Show tooltip for long text
       >
-        {value}
+        {value.length > 20 ? `${value.substring(0, 20)}...` : value}
       </span>
     )}
   </div>
@@ -835,9 +835,19 @@ Best regards`;
 
                 {/* Contact Information */}
                 <div className={`grid gap-3 md:gap-3.5 ${
-                  (profile.email || "").length > 20 
-                    ? "grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr]" 
-                    : "grid-cols-1 md:grid-cols-3"
+                  // Determine grid layout based on available fields
+                  (() => {
+                    const hasWebsite = isEditing || profile.website?.trim();
+                    const totalFields = 2 + (hasWebsite ? 1 : 0); // email + location + website (optional)
+                    
+                    if (totalFields === 2) {
+                      return "grid-cols-1 md:grid-cols-2";
+                    } else if ((profile.email || "").length > 20) {
+                      return "grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr]";
+                    } else {
+                      return "grid-cols-1 md:grid-cols-3";
+                    }
+                  })()
                 }`}>
                   <div className="min-w-0">
                     <EditableContactInfo
@@ -864,35 +874,37 @@ Best regards`;
                       showTick={copyStates.email}
                     />
                   </div>
-                  <div className="min-w-0">
-                    <EditableContactInfo
-                      icon={Globe}
-                      value={profile.website || ""}
-                      isEditing={isEditing}
-                      onChange={
-                        isEditing
-                          ? (value) => handleProfileFieldChange("website", value)
-                          : undefined
-                      }
-                      placeholder="yourwebsite.com"
-                      isClickable={!isEditing}
-                      onClick={() =>
-                        !isEditing &&
-                        profile.website &&
-                        handleExternalLink(profile.website)
-                      }
-                      onIconClick={() =>
-                        !isEditing &&
-                        profile.website &&
-                        handleCopyWithAnimation(
-                          profile.website,
-                          "Website",
-                          "website",
-                        )
-                      }
-                      showTick={copyStates.website}
-                    />
-                  </div>
+                  {(isEditing || profile.website?.trim()) && (
+                    <div className="min-w-0">
+                      <EditableContactInfo
+                        icon={Globe}
+                        value={profile.website || ""}
+                        isEditing={isEditing}
+                        onChange={
+                          isEditing
+                            ? (value) => handleProfileFieldChange("website", value)
+                            : undefined
+                        }
+                        placeholder="yourwebsite.com"
+                        isClickable={!isEditing}
+                        onClick={() =>
+                          !isEditing &&
+                          profile.website &&
+                          handleExternalLink(profile.website)
+                        }
+                        onIconClick={() =>
+                          !isEditing &&
+                          profile.website &&
+                          handleCopyWithAnimation(
+                            profile.website,
+                            "Website",
+                            "website",
+                          )
+                        }
+                        showTick={copyStates.website}
+                      />
+                    </div>
+                  )}
                   <div className="min-w-0">
                     <EditableContactInfo
                       icon={MapPin}
