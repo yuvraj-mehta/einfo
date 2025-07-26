@@ -310,6 +310,7 @@ const EditableContactInfo = ({
   onClick,
   onIconClick,
   showTick = false,
+  fieldType = "default", // Add field type to differentiate handling
 }: {
   icon: any;
   value: string;
@@ -320,6 +321,7 @@ const EditableContactInfo = ({
   onClick?: () => void;
   onIconClick?: () => void;
   showTick?: boolean;
+  fieldType?: "email" | "website" | "default";
 }) => (
   <div className="flex items-center text-gray-600 justify-center md:justify-start min-w-0 w-full">
     {showTick ? (
@@ -348,7 +350,7 @@ const EditableContactInfo = ({
             ? "cursor-pointer hover:text-gray-800 transition-colors"
             : ""
         } ${
-          value.length > 20 
+          fieldType === "website" && value.length > 20
             ? "overflow-hidden text-ellipsis whitespace-nowrap" 
             : "break-words"
         }`}
@@ -356,9 +358,11 @@ const EditableContactInfo = ({
           e.stopPropagation();
           onClick?.();
         }}
-        title={value.length > 20 ? value : undefined} // Show tooltip for long text
+        title={fieldType === "website" && value.length > 20 ? value : undefined}
       >
-        {value.length > 20 ? `${value.substring(0, 20)}...` : value}
+        {fieldType === "website" && value.length > 20 
+          ? `${value.substring(0, 20)}...` 
+          : value}
       </span>
     )}
   </div>
@@ -872,6 +876,7 @@ Best regards`;
                         handleCopyWithAnimation(profile.email, "Email", "email")
                       }
                       showTick={copyStates.email}
+                      fieldType="email"
                     />
                   </div>
                   {(isEditing || profile.website?.trim()) && (
@@ -902,6 +907,7 @@ Best regards`;
                           )
                         }
                         showTick={copyStates.website}
+                        fieldType="website"
                       />
                     </div>
                   )}
@@ -926,6 +932,7 @@ Best regards`;
                         )
                       }
                       showTick={copyStates.location}
+                      fieldType="default"
                     />
                   </div>
                 </div>
