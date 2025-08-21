@@ -350,7 +350,7 @@ const EditableContactInfo = ({
             ? "cursor-pointer hover:text-gray-800 transition-colors"
             : ""
         } ${
-          fieldType === "website" && value.length > 20
+          (fieldType === "website" || fieldType === "email") && value.length > 20
             ? "overflow-hidden text-ellipsis whitespace-nowrap" 
             : "break-words"
         }`}
@@ -358,9 +358,9 @@ const EditableContactInfo = ({
           e.stopPropagation();
           onClick?.();
         }}
-        title={fieldType === "website" && value.length > 20 ? value : undefined}
+        title={(fieldType === "website" || fieldType === "email") && value.length > 20 ? value : undefined}
       >
-        {fieldType === "website" && value.length > 20 
+        {(fieldType === "website" || fieldType === "email") && value.length > 20 
           ? `${value.substring(0, 20)}...` 
           : value}
       </span>

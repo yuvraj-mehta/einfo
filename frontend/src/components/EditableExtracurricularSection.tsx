@@ -578,29 +578,31 @@ const EditableExtracurricularItem = ({
           </div>
 
           {/* Responsibilities Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Key Responsibilities ({editingExtracurricular.responsibilities.length}/10)
-              </label>
-              <Button
-                onClick={handleAddResponsibility}
-                variant="ghost"
-                size="sm"
-                disabled={editingExtracurricular.responsibilities.length >= 10}
-                className={`h-7 px-2 text-xs ${
-                  editingExtracurricular.responsibilities.length >= 10
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                {editingExtracurricular.responsibilities.length >= 10 ? 'Max Reached' : 'Add Responsibility'}
-              </Button>
-            </div>
+          {(editingExtracurricular.responsibilities.length > 0 || 
+            editingExtracurricular.responsibilities.some(resp => resp.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Key Responsibilities ({editingExtracurricular.responsibilities.length}/10)
+                </label>
+                <Button
+                  onClick={handleAddResponsibility}
+                  variant="ghost"
+                  size="sm"
+                  disabled={editingExtracurricular.responsibilities.length >= 10}
+                  className={`h-7 px-2 text-xs ${
+                    editingExtracurricular.responsibilities.length >= 10
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  {editingExtracurricular.responsibilities.length >= 10 ? 'Max Reached' : 'Add Responsibility'}
+                </Button>
+              </div>
 
-            <div className="space-y-2">
-              {editingExtracurricular.responsibilities.map((responsibility, responsibilityIndex) => (
+              <div className="space-y-2">
+                {editingExtracurricular.responsibilities.map((responsibility, responsibilityIndex) => (
                 <div key={responsibilityIndex} className="space-y-1">
                   <div className="flex items-start gap-2">
                     <div className="flex-1 space-y-1">
@@ -667,15 +669,33 @@ const EditableExtracurricularItem = ({
               ))}
             </div>
           </div>
+          )}
+
+          {/* Add Responsibilities Button - Show when no responsibilities exist */}
+          {editingExtracurricular.responsibilities.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddResponsibility}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Key Responsibilities
+              </Button>
+            </div>
+          )}
 
           {/* Achievements Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Notable Achievements ({editingExtracurricular.achievements.length}/8)
-              </label>
-              <Button
-                onClick={handleAddAchievement}
+          {(editingExtracurricular.achievements.length > 0 || 
+            editingExtracurricular.achievements.some(ach => ach.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Notable Achievements ({editingExtracurricular.achievements.length}/8)
+                </label>
+                <Button
+                  onClick={handleAddAchievement}
                 variant="ghost"
                 size="sm"
                 disabled={editingExtracurricular.achievements.length >= 8}
@@ -766,18 +786,36 @@ const EditableExtracurricularItem = ({
               )}
             </div>
           </div>
+          )}
 
-          {/* Skills Developed Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Skills Developed ({editingExtracurricular.skillsDeveloped.length}/12)
-              </label>
+          {/* Add Achievements Button - Show when no achievements exist */}
+          {editingExtracurricular.achievements.length === 0 && (
+            <div className="space-y-3">
               <Button
-                onClick={handleAddSkill}
+                onClick={handleAddAchievement}
                 variant="ghost"
                 size="sm"
-                disabled={editingExtracurricular.skillsDeveloped.length >= 12}
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Notable Achievements
+              </Button>
+            </div>
+          )}
+
+          {/* Skills Developed Section */}
+          {(editingExtracurricular.skillsDeveloped.length > 0 || 
+            editingExtracurricular.skillsDeveloped.some(skill => skill.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Skills Developed ({editingExtracurricular.skillsDeveloped.length}/12)
+                </label>
+                <Button
+                  onClick={handleAddSkill}
+                  variant="ghost"
+                  size="sm"
+                  disabled={editingExtracurricular.skillsDeveloped.length >= 12}
                 className={`h-7 px-2 text-xs ${
                   editingExtracurricular.skillsDeveloped.length >= 12
                     ? 'text-gray-400 cursor-not-allowed'
@@ -857,6 +895,22 @@ const EditableExtracurricularItem = ({
               ))}
             </div>
           </div>
+          )}
+
+          {/* Add Skills Developed Button - Show when no skills exist */}
+          {editingExtracurricular.skillsDeveloped.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddSkill}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Skills Developed
+              </Button>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end items-center pt-2 border-t border-gray-100">
@@ -918,21 +972,34 @@ export default function EditableExtracurricularSection({
   const containerRef = useRef<HTMLDivElement>(null);
   const extracurricularRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Helper function to clean up extracurriculars by removing empty strings
+  const cleanupExtracurriculars = (extracurriculars: ExtracurricularData[]): ExtracurricularData[] => {
+    return extracurriculars.map(extracurricular => ({
+      ...extracurricular,
+      responsibilities: extracurricular.responsibilities.filter(resp => resp.trim() !== ''),
+      achievements: extracurricular.achievements.filter(ach => ach.trim() !== ''),
+      skillsDeveloped: extracurricular.skillsDeveloped.filter(skill => skill.trim() !== '')
+    }));
+  };
+
   const handleStartEdit = () => {
-    setEditingExtracurriculars([...extracurriculars]);
+    setEditingExtracurriculars(cleanupExtracurriculars([...extracurriculars]));
     setIsEditing(true);
   };
 
   const handleSave = () => {
+    // Clean up extracurriculars before saving
+    const cleanedExtracurriculars = cleanupExtracurriculars(editingExtracurriculars);
+    
     // Show immediate feedback
     toast.success("Update Queued");
     
-    onExtracurricularsUpdate(editingExtracurriculars);
+    onExtracurricularsUpdate(cleanedExtracurriculars);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditingExtracurriculars([...extracurriculars]);
+    setEditingExtracurriculars(cleanupExtracurriculars([...extracurriculars]));
     setIsEditing(false);
   };
 
@@ -967,9 +1034,9 @@ export default function EditableExtracurricularSection({
       iconName: "Users", // Store iconName as string
       type: "leadership",
       role: "",
-      responsibilities: [""],
-      achievements: [""],
-      skillsDeveloped: [""],
+      responsibilities: [],
+      achievements: [],
+      skillsDeveloped: [],
     };
     setEditingExtracurriculars([...editingExtracurriculars, newExtracurricular]);
   };

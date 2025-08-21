@@ -536,28 +536,30 @@ const EditableEducationItem = ({
           </div>
 
           {/* Courses Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Key Courses ({editingEducation.courses.length}/25)
-              </label>
-              <Button
-                onClick={handleAddCourse}
-                variant="ghost"
-                size="sm"
-                disabled={editingEducation.courses.length >= 25}
-                className={`h-7 px-2 text-xs ${
-                  editingEducation.courses.length >= 25
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                {editingEducation.courses.length >= 25 ? 'Max Reached' : 'Add Course'}
-              </Button>
-            </div>
+          {(editingEducation.courses.length > 0 || 
+            editingEducation.courses.some(course => course.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Key Courses ({editingEducation.courses.length}/25)
+                </label>
+                <Button
+                  onClick={handleAddCourse}
+                  variant="ghost"
+                  size="sm"
+                  disabled={editingEducation.courses.length >= 25}
+                  className={`h-7 px-2 text-xs ${
+                    editingEducation.courses.length >= 25
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  {editingEducation.courses.length >= 25 ? 'Max Reached' : 'Add Course'}
+                </Button>
+              </div>
 
-            <div className="space-y-2">
+              <div className="space-y-2">
               {editingEducation.courses.map((course, courseIndex) => (
                 <div key={courseIndex} className="space-y-1">
                   <div className="flex items-start gap-2">
@@ -625,17 +627,35 @@ const EditableEducationItem = ({
               ))}
             </div>
           </div>
+          )}
 
-          {/* Achievements Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Key Achievements ({editingEducation.achievements.length}/10)
-              </label>
+          {/* Add Courses Button - Show when no courses exist */}
+          {editingEducation.courses.length === 0 && (
+            <div className="space-y-3">
               <Button
-                onClick={handleAddAchievement}
+                onClick={handleAddCourse}
                 variant="ghost"
                 size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Key Courses
+              </Button>
+            </div>
+          )}
+
+          {/* Achievements Section */}
+          {(editingEducation.achievements.length > 0 || 
+            editingEducation.achievements.some(ach => ach.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Key Achievements ({editingEducation.achievements.length}/10)
+                </label>
+                <Button
+                  onClick={handleAddAchievement}
+                  variant="ghost"
+                  size="sm"
                 disabled={editingEducation.achievements.length >= 10}
                 className={`h-7 px-2 text-xs ${
                   editingEducation.achievements.length >= 10
@@ -724,6 +744,22 @@ const EditableEducationItem = ({
               )}
             </div>
           </div>
+          )}
+
+          {/* Add Achievements Button - Show when no achievements exist */}
+          {editingEducation.achievements.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddAchievement}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Key Achievements
+              </Button>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end items-center pt-2 border-t border-gray-100">
@@ -785,21 +821,33 @@ export default function EditableEducationSection({
   const containerRef = useRef<HTMLDivElement>(null);
   const educationRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Helper function to clean up education by removing empty strings
+  const cleanupEducation = (education: EducationData[]): EducationData[] => {
+    return education.map(edu => ({
+      ...edu,
+      courses: edu.courses.filter(course => course.trim() !== ''),
+      achievements: edu.achievements.filter(ach => ach.trim() !== '')
+    }));
+  };
+
   const handleStartEdit = () => {
-    setEditingEducation([...education]);
+    setEditingEducation(cleanupEducation([...education]));
     setIsEditing(true);
   };
 
   const handleSave = () => {
+    // Clean up education before saving
+    const cleanedEducation = cleanupEducation(editingEducation);
+    
     // Show immediate feedback
     toast.success("Update Queued");
     
-    onEducationUpdate(editingEducation);
+    onEducationUpdate(cleanedEducation);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditingEducation([...education]);
+    setEditingEducation(cleanupEducation([...education]));
     setIsEditing(false);
   };
 
@@ -833,8 +881,8 @@ export default function EditableEducationSection({
       description: "",
       iconName: "GraduationCap", // Store iconName as string
       type: "degree",
-      achievements: [""],
-      courses: [""],
+      achievements: [],
+      courses: [],
     };
     setEditingEducation([...editingEducation, newEducation]);
   };

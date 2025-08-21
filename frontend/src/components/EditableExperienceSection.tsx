@@ -385,29 +385,31 @@ const EditableExperienceItem = ({
           </div>
 
           {/* Achievements Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Key Achievements ({editingExperience.achievements.length}/8)
-              </label>
-              <Button
-                onClick={handleAddAchievement}
-                variant="ghost"
-                size="sm"
-                disabled={editingExperience.achievements.length >= 8}
-                className={`h-7 px-2 text-xs ${
-                  editingExperience.achievements.length >= 8
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                {editingExperience.achievements.length >= 8 ? 'Max Reached' : 'Add Achievement'}
-              </Button>
-            </div>
+          {(editingExperience.achievements.length > 0 || 
+            editingExperience.achievements.some(ach => ach.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Key Achievements ({editingExperience.achievements.length}/8)
+                </label>
+                <Button
+                  onClick={handleAddAchievement}
+                  variant="ghost"
+                  size="sm"
+                  disabled={editingExperience.achievements.length >= 8}
+                  className={`h-7 px-2 text-xs ${
+                    editingExperience.achievements.length >= 8
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  {editingExperience.achievements.length >= 8 ? 'Max Reached' : 'Add Achievement'}
+                </Button>
+              </div>
 
-            <div className="space-y-2">
-              {editingExperience.achievements.map(
+              <div className="space-y-2">
+                {editingExperience.achievements.map(
                 (achievement, achievementIndex) => (
                   <div
                     key={achievementIndex}
@@ -482,6 +484,22 @@ const EditableExperienceItem = ({
               )}
             </div>
           </div>
+          )}
+
+          {/* Add Achievements Button - Show when no achievements exist */}
+          {editingExperience.achievements.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddAchievement}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Key Achievements
+              </Button>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end items-center pt-2 border-t border-gray-100">
@@ -541,21 +559,32 @@ export default function EditableExperienceSection({
   const containerRef = useRef<HTMLDivElement>(null);
   const experienceRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Helper function to clean up experiences by removing empty strings
+  const cleanupExperiences = (experiences: WorkExperienceData[]): WorkExperienceData[] => {
+    return experiences.map(exp => ({
+      ...exp,
+      achievements: exp.achievements.filter(ach => ach.trim() !== '')
+    }));
+  };
+
   const handleStartEdit = () => {
-    setEditingExperiences([...experiences]);
+    setEditingExperiences(cleanupExperiences([...experiences]));
     setIsEditing(true);
   };
 
   const handleSave = () => {
+    // Clean up experiences before saving
+    const cleanedExperiences = cleanupExperiences(editingExperiences);
+    
     // Show immediate feedback
     toast.success("Update Queued");
     
-    onExperiencesUpdate(editingExperiences);
+    onExperiencesUpdate(cleanedExperiences);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditingExperiences([...experiences]);
+    setEditingExperiences(cleanupExperiences([...experiences]));
     setIsEditing(false);
   };
 
@@ -588,7 +617,7 @@ export default function EditableExperienceSection({
       location: "",
       description: "",
       projects: [],
-      achievements: [""],
+      achievements: [],
       iconName: "Briefcase", // Store iconName as string
     };
     setEditingExperiences([...editingExperiences, newExperience]);

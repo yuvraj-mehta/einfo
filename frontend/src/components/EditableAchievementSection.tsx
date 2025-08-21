@@ -500,29 +500,31 @@ const EditableAchievementItem = ({
           </div>
 
           {/* Skills Involved Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Skills Involved ({editingAchievement.skillsInvolved.length}/15)
-              </label>
-              <Button
-                onClick={handleAddSkill}
-                variant="ghost"
-                size="sm"
-                disabled={editingAchievement.skillsInvolved.length >= 15}
-                className={`h-7 px-2 text-xs ${
-                  editingAchievement.skillsInvolved.length >= 15
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                {editingAchievement.skillsInvolved.length >= 15 ? 'Max Reached' : 'Add Skill'}
-              </Button>
-            </div>
+          {(editingAchievement.skillsInvolved.length > 0 || 
+            editingAchievement.skillsInvolved.some(skill => skill.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Skills Involved ({editingAchievement.skillsInvolved.length}/15)
+                </label>
+                <Button
+                  onClick={handleAddSkill}
+                  variant="ghost"
+                  size="sm"
+                  disabled={editingAchievement.skillsInvolved.length >= 15}
+                  className={`h-7 px-2 text-xs ${
+                    editingAchievement.skillsInvolved.length >= 15
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  {editingAchievement.skillsInvolved.length >= 15 ? 'Max Reached' : 'Add Skill'}
+                </Button>
+              </div>
 
-            <div className="space-y-2">
-              {editingAchievement.skillsInvolved.map((skill, skillIndex) => (
+              <div className="space-y-2">
+                {editingAchievement.skillsInvolved.map((skill, skillIndex) => (
                 <div key={skillIndex} className="space-y-1">
                   <div className="flex items-start gap-2">
                     <div className="flex-1 space-y-1">
@@ -589,13 +591,31 @@ const EditableAchievementItem = ({
               ))}
             </div>
           </div>
+          )}
+
+          {/* Add Skills Button - Show when no skills exist */}
+          {editingAchievement.skillsInvolved.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddSkill}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Skills Involved
+              </Button>
+            </div>
+          )}
 
           {/* Key Points Section */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-gray-800">
-                Key Points ({editingAchievement.keyPoints.length}/10)
-              </label>
+          {(editingAchievement.keyPoints.length > 0 || 
+            editingAchievement.keyPoints.some(point => point.trim() !== '')) && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-gray-800">
+                  Key Points ({editingAchievement.keyPoints.length}/10)
+                </label>
               <Button
                 onClick={handleAddKeyPoint}
                 variant="ghost"
@@ -688,6 +708,22 @@ const EditableAchievementItem = ({
               )}
             </div>
           </div>
+          )}
+
+          {/* Add Key Points Button - Show when no key points exist */}
+          {editingAchievement.keyPoints.length === 0 && (
+            <div className="space-y-3">
+              <Button
+                onClick={handleAddKeyPoint}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs text-gray-600 hover:text-gray-800 w-full border border-dashed border-gray-300 hover:border-gray-400"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Key Points
+              </Button>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex justify-end items-center pt-2 border-t border-gray-100">
@@ -749,21 +785,33 @@ export default function EditableAchievementSection({
   const containerRef = useRef<HTMLDivElement>(null);
   const achievementRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
+  // Helper function to clean up achievements by removing empty strings
+  const cleanupAchievements = (achievements: AchievementData[]): AchievementData[] => {
+    return achievements.map(achievement => ({
+      ...achievement,
+      skillsInvolved: achievement.skillsInvolved.filter(skill => skill.trim() !== ''),
+      keyPoints: achievement.keyPoints.filter(point => point.trim() !== '')
+    }));
+  };
+
   const handleStartEdit = () => {
-    setEditingAchievements([...achievements]);
+    setEditingAchievements(cleanupAchievements([...achievements]));
     setIsEditing(true);
   };
 
   const handleSave = () => {
+    // Clean up achievements before saving
+    const cleanedAchievements = cleanupAchievements(editingAchievements);
+    
     // Show immediate feedback
     toast.success("Update Queued");
     
-    onAchievementsUpdate(editingAchievements);
+    onAchievementsUpdate(cleanedAchievements);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditingAchievements([...achievements]);
+    setEditingAchievements(cleanupAchievements([...achievements]));
     setIsEditing(false);
   };
 
@@ -797,8 +845,8 @@ export default function EditableAchievementSection({
       description: "",
       iconName: "Trophy", // Store iconName as string
       type: "competition",
-      skillsInvolved: [""],
-      keyPoints: [""],
+      skillsInvolved: [],
+      keyPoints: [],
     };
     setEditingAchievements([...editingAchievements, newAchievement]);
   };
