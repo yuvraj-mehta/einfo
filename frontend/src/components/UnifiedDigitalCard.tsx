@@ -845,7 +845,8 @@ Best regards`;
                     const totalFields = 2 + (hasWebsite ? 1 : 0); // email + location + website (optional)
                     
                     if (totalFields === 2) {
-                      return "grid-cols-1 md:grid-cols-2";
+                      // Better arrangement for just email and location - centered with max width
+                      return "grid-cols-1 sm:grid-cols-2 sm:max-w-md sm:mx-auto";
                     } else if ((profile.email || "").length > 20) {
                       return "grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr]";
                     } else {
