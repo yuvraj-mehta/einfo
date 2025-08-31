@@ -40,16 +40,16 @@ async function renderBuild() {
   // Step 3: Deploy migrations (with retry logic)
   let migrationSuccess = false;
   const maxRetries = 3;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     console.log(`\n🔄 Attempting database migration (attempt ${i + 1}/${maxRetries})...`);
-    
+
     migrationSuccess = await runCommand('npx prisma migrate deploy', `Database migration (attempt ${i + 1})`);
-    
+
     if (migrationSuccess) {
       break;
     }
-    
+
     if (i < maxRetries - 1) {
       console.log('⏳ Waiting 5 seconds before retry...');
       await new Promise(resolve => setTimeout(resolve, 5000));

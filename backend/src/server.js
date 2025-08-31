@@ -47,10 +47,10 @@ app.use(compression());
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map(o => o.trim());
-    
+
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -102,7 +102,7 @@ if (process.env.NODE_ENV !== "development") {
   app.use("/api/", limiter);
   app.use("/api/auth/", authLimiter); // Stricter limits for auth
   app.use("/api/", speedLimiter);
-  
+
   logger.info("Rate limiting enabled");
 } else {
   logger.info("Rate limiting disabled for development environment");
@@ -124,8 +124,8 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Health check endpoint
 app.get("/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
+  res.json({
+    status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     memory: process.memoryUsage(),
@@ -158,7 +158,7 @@ const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : (process.env.AP
 
 // Add root route for Render health checks
 app.get("/", (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     message: "E-Info Backend API is running!",
     status: "healthy",
     version: "1.0.0",
@@ -173,10 +173,10 @@ async function startServer() {
     // Check migrations before starting (with better error handling)
     if (process.env.NODE_ENV === 'production' && process.env.SKIP_MIGRATION_CHECK !== 'true') {
       logger.info('Checking migration status before startup...');
-      
+
       try {
         const migrationStatus = await checkMigrations();
-        
+
         if (migrationStatus.status !== 'current') {
           logger.error('Cannot start server: pending migrations detected', {
             pendingMigrations: migrationStatus.pendingMigrations
@@ -186,7 +186,7 @@ async function startServer() {
           console.error('Run "npm run migrate-deploy" first, then restart the server.\n');
           process.exit(1);
         }
-        
+
         logger.info('✅ All migrations are current, starting server...');
       } catch (migrationError) {
         logger.warn('Migration check failed, proceeding with server start in production', {
@@ -201,7 +201,7 @@ async function startServer() {
     } else {
       logger.info('Skipping migration check (development mode)');
     }
-    
+
     // Start the server
     app.listen(PORT, HOST, () => {
       logger.info("Server started successfully", {
@@ -214,13 +214,13 @@ async function startServer() {
           health: `http://${HOST}:${PORT}/health`
         }
       });
-      
+
       console.log(`\n🚀 Server is running on http://${HOST}:${PORT}`);
       console.log(`📝 Health check: http://${HOST}:${PORT}/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
       console.log(`🔗 Host binding: ${HOST} (${HOST === '0.0.0.0' ? 'accessible from outside' : 'local only'})\n`);
     });
-    
+
   } catch (error) {
     logger.error('Failed to start server', {
       error: error.message,
