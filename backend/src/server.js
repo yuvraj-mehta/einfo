@@ -158,10 +158,12 @@ const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : (process.env.AP
 
 // Add root route for Render health checks
 app.get("/", (req, res) => {
-  res.json({ 
+  res.status(200).json({ 
     message: "E-Info Backend API is running!",
     status: "healthy",
-    version: "1.0.0"
+    version: "1.0.0",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development"
   });
 });
 
@@ -206,6 +208,7 @@ async function startServer() {
         port: PORT,
         host: HOST,
         environment: process.env.NODE_ENV || "development",
+        service: "einfo-backend",
         urls: {
           server: `http://${HOST}:${PORT}`,
           health: `http://${HOST}:${PORT}/health`
@@ -214,7 +217,8 @@ async function startServer() {
       
       console.log(`\n🚀 Server is running on http://${HOST}:${PORT}`);
       console.log(`📝 Health check: http://${HOST}:${PORT}/health`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}\n`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(`🔗 Host binding: ${HOST} (${HOST === '0.0.0.0' ? 'accessible from outside' : 'local only'})\n`);
     });
     
   } catch (error) {
