@@ -168,22 +168,36 @@ app.get("/", (req, res) => {
 // Startup function with migration check
 async function startServer() {
   try {
-    // Check migrations before starting (only in production)
-    if (process.env.NODE_ENV === 'production') {
+    // Check migrations before starting (with better error handling)
+    if (process.env.NODE_ENV === 'production' && process.env.SKIP_MIGRATION_CHECK !== 'true') {
       logger.info('Checking migration status before startup...');
-      const migrationStatus = await checkMigrations();
       
-      if (migrationStatus.status !== 'current') {
-        logger.error('Cannot start server: pending migrations detected', {
-          pendingMigrations: migrationStatus.pendingMigrations
+      try {
+        const migrationStatus = await checkMigrations();
+        
+        if (migrationStatus.status !== 'current') {
+          logger.error('Cannot start server: pending migrations detected', {
+            pendingMigrations: migrationStatus.pendingMigrations
+          });
+          console.error('\n❌ Cannot start server: Database migrations are not current!');
+          console.error('Pending migrations:', migrationStatus.pendingMigrations);
+          console.error('Run "npm run migrate-deploy" first, then restart the server.\n');
+          process.exit(1);
+        }
+        
+        logger.info('✅ All migrations are current, starting server...');
+      } catch (migrationError) {
+        logger.warn('Migration check failed, proceeding with server start in production', {
+          error: migrationError.message,
+          code: migrationError.code
         });
-        console.error('\n❌ Cannot start server: Database migrations are not current!');
-        console.error('Pending migrations:', migrationStatus.pendingMigrations);
-        console.error('Run "npm run migrate-deploy" first, then restart the server.\n');
-        process.exit(1);
+        console.warn('⚠️  Migration check failed, but proceeding in production mode');
+        console.warn('Error:', migrationError.message);
       }
-      
-      logger.info('✅ All migrations are current, starting server...');
+    } else if (process.env.SKIP_MIGRATION_CHECK === 'true') {
+      logger.info('Migration check skipped (SKIP_MIGRATION_CHECK=true)');
+    } else {
+      logger.info('Skipping migration check (development mode)');
     }
     
     // Start the server
@@ -197,6 +211,10 @@ async function startServer() {
           health: `http://${HOST}:${PORT}/health`
         }
       });
+      
+      console.log(`\n🚀 Server is running on http://${HOST}:${PORT}`);
+      console.log(`📝 Health check: http://${HOST}:${PORT}/health`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}\n`);
     });
     
   } catch (error) {
